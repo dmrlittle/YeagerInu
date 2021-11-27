@@ -86,11 +86,11 @@
 	},
 	"sources": {
 		"Testing/YeagerInu.sol": {
-			"keccak256": "0xded83e3d39ef00417b9ddc07dcb6088dc0089777ccf53548c106002c3b1a11a1",
+			"keccak256": "0x3c2e1fdc3412585b2404000e8012276da5dd455c0d5a0d88127a1d0f9773a923",
 			"license": "Unlicensed",
 			"urls": [
-				"bzz-raw://06e979b3c4f670579a8cacd545c0d3f02c66f9222b52ccb0b0dc2b2874efd4d8",
-				"dweb:/ipfs/QmTJnEvSdyGkoDHE5uqrXDj5XkjjYS65hrHBsxFT6oWHDQ"
+				"bzz-raw://8519ca227d1251ce324d1283e8d0c09d9b6f19715f04c75a9a13684d7404027d",
+				"dweb:/ipfs/QmXyvebL8WqJ9na5AWfG9FSqATVhJUpcnfT6SWst6fcsxe"
 			]
 		}
 	},

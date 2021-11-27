@@ -266,7 +266,7 @@ contract YeagerInu is Context, IERC20Metadata, Ownable {
     }
 
     function setMaxTxAmount(uint256 maxTxAmount) external onlyOwner() {
-        require(maxTxAmount >= (_tTotal / 1000), "Max Transaction amt must be above 0.1% of total supply."); // Cannot set lower than 0.1%
+        require(maxTxAmount >= (_tTotal / 1000), "Max Transaction amt must be above 0.1% of total supply"); // Cannot set lower than 0.1%
         _maxTxAmount = maxTxAmount;
     }
 
@@ -277,7 +277,7 @@ contract YeagerInu is Context, IERC20Metadata, Ownable {
 
     function revertTax() external {
         require(!_tokenLock, "Token is Locked for Liquidty to be added");
-        //require(block.timestamp - _tokenCommenceTime > 86400); //check for 24 hours timeperiod
+        require(block.timestamp - _tokenCommenceTime > 120, "Tax can be reverted only after 24hrs"); //check for 24 hours timeperiod
         require(!_taxReverted, "Tax had been Reverted!"); //To prevent taxRevert more than once 
 
         _totalTaxPercent = 10;
