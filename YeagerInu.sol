@@ -103,7 +103,7 @@ contract YeagerInu is Context, IERC20Metadata, Ownable {
 
     bool private _tokenLock = true; //Locking the token until Liquidty is added
     bool private _taxReverted = false;
-    uint256 _tokenCommenceTime;
+    uint256 public _tokenCommenceTime;
 
     uint256 private constant _startingSupply = 100_000_000_000_000_000; //100 Quadrillion
     
@@ -112,11 +112,11 @@ contract YeagerInu is Context, IERC20Metadata, Ownable {
     uint256 private _rTotal = (MAX - (MAX % _tTotal));
     uint256 private _tFeeTotal;
     
-    string private constant _name = 'Yeager Inu';
-    string private constant _symbol = 'YENU';
+    string private constant _name = "Yeager Inu";
+    string private constant _symbol = "YENU";
     uint8 private constant _decimals = 18;
 
-    address public burnAddress = 0x000000000000000000000000000000000000dEaD; 
+    address public constant burnAddress = 0x000000000000000000000000000000000000dEaD; 
 
     constructor (address wallet1_,  address wallet2_) {
         _rOwned[_msgSender()] = _rTotal;
@@ -144,7 +144,7 @@ contract YeagerInu is Context, IERC20Metadata, Ownable {
         _governingTaxes = governingTaxes(4, 40, 40, 16, wallet1_, wallet2_); 
         
         //Max TX amount is 1% of the total supply.
-        _maxTxAmount = (_startingSupply / 100) * 10**18; 
+        _maxTxAmount = (_startingSupply * 10**18) / 100; 
 
         //Excluding Owner and Other Governing Wallets From Reward System;
         excludeFromFee(owner());
@@ -200,9 +200,9 @@ contract YeagerInu is Context, IERC20Metadata, Ownable {
 
         uint256 currentAllowance = _allowances[sender][_msgSender()];
         require(currentAllowance >= amount, "ERC20: transfer amount exceeds allowance");
-        unchecked {
-            _approve(sender, _msgSender(), currentAllowance - amount);
-        }
+        //unchecked {
+        //    _approve(sender, _msgSender(), currentAllowance - amount);
+        //}
 
         return true;
     }
@@ -215,9 +215,9 @@ contract YeagerInu is Context, IERC20Metadata, Ownable {
     function decreaseAllowance(address spender, uint256 subtractedValue) public virtual returns (bool) {
         uint256 currentAllowance = _allowances[_msgSender()][spender];
         require(currentAllowance >= subtractedValue, "ERC20: decreased allowance below zero");
-        unchecked {
-            _approve(_msgSender(), spender, currentAllowance - subtractedValue);
-        }
+        //unchecked {
+        //    _approve(_msgSender(), spender, currentAllowance - subtractedValue);
+        //}
 
         return true;
     }
@@ -228,11 +228,11 @@ contract YeagerInu is Context, IERC20Metadata, Ownable {
 
     function currentTaxes() public view 
     returns (
-        uint32 Total_Tax_Percent,
-        uint32 Burn_Split,
-        uint32 GoverningSplit_Wallet1,
-        uint32 GoverningSplit_Wallet2,
-        uint32 Reflect_Split
+        uint32 total_Tax_Percent,
+        uint32 burn_Split,
+        uint32 governingSplit_Wallet1,
+        uint32 governingSplit_Wallet2,
+        uint32 reflect_Split
     ) {
         return (
             _totalTaxPercent,
@@ -277,7 +277,7 @@ contract YeagerInu is Context, IERC20Metadata, Ownable {
 
     function revertTax() external {
         require(!_tokenLock, "Token is Locked for Liquidty to be added");
-        require(block.timestamp - _tokenCommenceTime > 86400); //check for 24 hours timeperiod
+        //require(block.timestamp - _tokenCommenceTime > 86400); //check for 24 hours timeperiod
         require(!_taxReverted, "Tax had been Reverted!"); //To prevent taxRevert more than once 
 
         _totalTaxPercent = 10;
@@ -412,7 +412,7 @@ contract YeagerInu is Context, IERC20Metadata, Ownable {
 
         if (_isExcluded[sender]) _tOwned[sender] = _tOwned[sender] - tAmount;
         if (_isExcluded[recipient]) _tOwned[recipient] = _tOwned[recipient] + tTransferAmount;
-        if (_isExcluded[address(0)]) _tOwned[burnAddress] += tFee._fee0;
+        if (_isExcluded[burnAddress]) _tOwned[burnAddress] += tFee._fee0;
         if (_isExcluded[_governingTaxes._wallet1]) _tOwned[_governingTaxes._wallet1] += tFee._fee1;
         if (_isExcluded[_governingTaxes._wallet2])_tOwned[_governingTaxes._wallet2] += tFee._fee2;
         
@@ -433,10 +433,10 @@ contract YeagerInu is Context, IERC20Metadata, Ownable {
 
     function _getTValues(uint256 tAmount) private view returns (uint256, Fees memory) {
         Fees memory tFee;
-        tFee._fee0 = tAmount * _totalTaxPercent * _governingTaxes._split0 / 10**4;
-        tFee._fee1 = tAmount * _totalTaxPercent * _governingTaxes._split1 / 10**4;
-        tFee._fee2 = tAmount * _totalTaxPercent * _governingTaxes._split2 / 10**4;
-        tFee._fee3 = tAmount * _totalTaxPercent * _governingTaxes._split3 / 10**4;
+        tFee._fee0 = (tAmount * _totalTaxPercent * _governingTaxes._split0) / 10**4;
+        tFee._fee1 = (tAmount * _totalTaxPercent * _governingTaxes._split1) / 10**4;
+        tFee._fee2 = (tAmount * _totalTaxPercent * _governingTaxes._split2) / 10**4;
+        tFee._fee3 = (tAmount * _totalTaxPercent * _governingTaxes._split3) / 10**4;
         uint256 tTransferAmount = tAmount - tFee._fee0 - tFee._fee1 - tFee._fee2 - tFee._fee3;
         return (tTransferAmount, tFee);
     }
