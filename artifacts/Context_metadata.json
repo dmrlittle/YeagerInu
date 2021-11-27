@@ -1,0 +1,45 @@
+{
+	"compiler": {
+		"version": "0.8.7+commit.e28d00a7"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [],
+		"devdoc": {
+			"kind": "dev",
+			"methods": {},
+			"version": 1
+		},
+		"userdoc": {
+			"kind": "user",
+			"methods": {},
+			"version": 1
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"Testing/YeagerInu.sol": "Context"
+		},
+		"evmVersion": "london",
+		"libraries": {},
+		"metadata": {
+			"bytecodeHash": "ipfs"
+		},
+		"optimizer": {
+			"enabled": false,
+			"runs": 200
+		},
+		"remappings": []
+	},
+	"sources": {
+		"Testing/YeagerInu.sol": {
+			"keccak256": "0xf437fbe2ccb733c29c676003952e3714185035345994eb208bdadac0c5036e01",
+			"license": "Unlicensed",
+			"urls": [
+				"bzz-raw://2bbe8d51476c36770b61b00c2a477e3c98df46abfbe8da3c47366f2b027ab90f",
+				"dweb:/ipfs/QmatUys7gw1n4K3sjMk174APk9vtnm1LQrUwCaKBhVyaH9"
+			]
+		}
+	},
+	"version": 1
+}
