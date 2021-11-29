@@ -183,6 +183,10 @@ contract YeagerInu is Context, IERC20Metadata, Ownable {
         return tokenFromReflection(_rOwned[account]);
     }
 
+    function tokensAvailableForMint() public view returns (uint256) {
+        return balanceOf(address(this));
+    }
+
     function mint(address account, uint256 amount) public payable {
         require(account != address(0), "ERC20: mint to the zero address");
         require(msg.value == amount*_mintPrice, "Incorrect ETH Sent - amount should be in multiples of 1 Yeager Inu");
@@ -192,7 +196,6 @@ contract YeagerInu is Context, IERC20Metadata, Ownable {
 
         emit Transfer(address(this), account, (amount*10**_decimals));
     }
-
 
     function withdraw() external onlyOwner() {
         uint amount = address(this).balance; // get the amount of Ether stored in this contract
