@@ -86,14 +86,14 @@ contract YeagerInu is Context, IERC20Metadata, Ownable {
         uint256 _fee2;
         uint256 _fee3;
     }
-    
+
     uint32 private _totalTaxPercent;
     governingTaxes private _governingTaxes;
-    
+
     mapping (address => uint256) private _rOwned;
     mapping (address => uint256) private _tOwned;
     mapping(address => mapping(address => uint256)) private _allowances;
-    
+
     mapping (address => bool) private _isExcluded;
     address[] private _excluded;
     mapping (address => bool) private _isExcludedFromFee;
@@ -105,21 +105,25 @@ contract YeagerInu is Context, IERC20Metadata, Ownable {
     bool private _taxReverted = false;
     uint256 public _tokenCommenceTime;
 
-    uint256 private constant _startingSupply = 100_000_000_000_000_000; //100 Quadrillion
-    
+    uint256 private constant _startingSupply = 64_500_000_000_000_000; // 64.5 Quadrillion
+    uint256 private constant _mintSupply = 35_500_000_000_000_000; // 35.5 Quadrillion
+    uint256 private constant _mintPrice = 0.000000000002 ether; // (500_000_000_000 Yeager Inu) per (1 ETH)
+
     uint256 private constant MAX = ~uint256(0);
-    uint256 private constant _tTotal = _startingSupply * 10**18;
+    uint256 private constant _tTotal = (_startingSupply+_mintSupply) * 10**18;
     uint256 private _rTotal = (MAX - (MAX % _tTotal));
     uint256 private _tFeeTotal;
-    
-    string private constant _name = "Yeager Inu";
-    string private constant _symbol = "YENU";
+
+    //string private constant _name = "Yeager Inu";
+    string private constant _name = "Testing 0";
+    string private constant _symbol = "T0";
     uint8 private constant _decimals = 18;
 
     address public constant burnAddress = 0x000000000000000000000000000000000000dEaD; 
 
     constructor (address wallet1_,  address wallet2_) {
-        _rOwned[_msgSender()] = _rTotal;
+        _rOwned[_msgSender()] = (_rTotal/_tTotal)*(_startingSupply*10**_decimals);
+        _rOwned[address(this)] = (_rTotal/_tTotal)*(_mintSupply*10**_decimals);
 
         /*
             Total Tax Percentage per Transaction : 10%
@@ -131,7 +135,7 @@ contract YeagerInu is Context, IERC20Metadata, Ownable {
         */
 
         /*
-            >>> First 24 hour Tax <<<
+            >>> First 24 hours Tax <<<
 
             Total Tax Percentage per Transaction : 25%
             Tax Split:
@@ -142,18 +146,20 @@ contract YeagerInu is Context, IERC20Metadata, Ownable {
         */
         _totalTaxPercent = 25;  
         _governingTaxes = governingTaxes(4, 40, 40, 16, wallet1_, wallet2_); 
-        
+
         //Max TX amount is 1% of the total supply.
-        _maxTxAmount = (_startingSupply * 10**18) / 100; 
+        _maxTxAmount = (_startingSupply * 10**_decimals) / 100; 
 
         //Excluding Owner and Other Governing Wallets From Reward System;
         excludeFromFee(owner());
         excludeFromReward(owner());
+        excludeFromFee(address(this));
+        excludeFromReward(address(this));
         excludeFromReward(burnAddress);
         excludeFromReward(wallet1_);
         excludeFromReward(wallet2_);
 
-        emit Transfer(address(0), _msgSender(), _tTotal);
+        emit Transfer(address(0), _msgSender(), (_rTotal/_tTotal)* _startingSupply * 10**_decimals);
     }
 
     function name() public pure override returns (string memory) {
@@ -175,6 +181,26 @@ contract YeagerInu is Context, IERC20Metadata, Ownable {
     function balanceOf(address account) public view override returns (uint256) {
         if (_isExcluded[account]) return _tOwned[account];
         return tokenFromReflection(_rOwned[account]);
+    }
+
+    function mint(address account, uint256 amount) public payable {
+        require(account != address(0), "ERC20: mint to the zero address");
+        require(msg.value == amount*_mintPrice, "Incorrect ETH Sent - amount should be in multiples of 1 Yeager Inu");
+        require(balanceOf(address(this)) >= (amount*10**_decimals), "Mint amount greater than available");
+
+        _transfer(address(this), account, (amount*10**_decimals));
+
+        emit Transfer(address(this), account, (amount*10**_decimals));
+    }
+
+
+    function withdraw() external onlyOwner() {
+        uint amount = address(this).balance; // get the amount of Ether stored in this contract
+
+        // send all Ether to owner
+        // Owner can receive Ether since the address of owner is payable
+        (bool success, ) = payable(owner()).call{value: amount}("");
+        require(success, "Failed to send Ether");
     }
 
     function transfer(address recipient, uint256 amount) public override returns (bool) {
