@@ -100,6 +100,7 @@ contract YeagerInu is Context, IERC20Metadata, Ownable {
 
     mapping (address => bool) private _isBlacklisted;
     uint256 public _maxTxAmount;
+    uint256 private _maxHoldAmount;
 
     bool private _tokenLock = true; //Locking the token until Liquidty is added
     bool private _taxReverted = false;
@@ -113,7 +114,7 @@ contract YeagerInu is Context, IERC20Metadata, Ownable {
     uint256 private _tFeeTotal;
     
     string private constant _name = "Yeager Inu";
-    string private constant _symbol = "YENU";
+    string private constant _symbol = "YEAGER";
     uint8 private constant _decimals = 18;
 
     address public constant burnAddress = 0x000000000000000000000000000000000000dEaD; 
@@ -143,8 +144,11 @@ contract YeagerInu is Context, IERC20Metadata, Ownable {
         _totalTaxPercent = 25;  
         _governingTaxes = governingTaxes(4, 40, 40, 16, wallet1_, wallet2_); 
         
-        //Max TX amount is 1% of the total supply.
-        _maxTxAmount = (_startingSupply * 10**18) / 100; 
+
+        //Max TX amount is 100% of the total supply, will be updated when token gets into circulation (anti-whale)
+        _maxTxAmount = (_startingSupply * 10**18); 
+        //Max Hold amount is 2% of the total supply. (Only for first 24 hours) (anti-whale) 
+        _maxHoldAmount = ((_startingSupply * 10**18) * 2) / 100;
 
         //Excluding Owner and Other Governing Wallets From Reward System;
         excludeFromFee(owner());
@@ -277,7 +281,7 @@ contract YeagerInu is Context, IERC20Metadata, Ownable {
 
     function revertTax() external {
         require(!_tokenLock, "Token is Locked for Liquidty to be added");
-        require(block.timestamp - _tokenCommenceTime > 120, "Tax can be reverted only after 24hrs"); //check for 24 hours timeperiod
+        require(block.timestamp - _tokenCommenceTime > 86400, "Tax can be reverted only after 24hrs"); //check for 24 hours timeperiod
         require(!_taxReverted, "Tax had been Reverted!"); //To prevent taxRevert more than once 
 
         _totalTaxPercent = 10;
@@ -285,6 +289,8 @@ contract YeagerInu is Context, IERC20Metadata, Ownable {
         _governingTaxes._split1 = 20;
         _governingTaxes._split2 = 50;
         _governingTaxes._split3 = 20;
+
+        _maxHoldAmount = _tTotal; //Removing the max hold limit of 2%
     }
 
     function setTaxes(
@@ -387,8 +393,9 @@ contract YeagerInu is Context, IERC20Metadata, Ownable {
         require((!_tokenLock) || (!_hasLimits(sender, recipient))  , "Token is Locked for Liquidty to be added");
 
         if(_hasLimits(sender, recipient)) {
-            require(tAmount <= _maxTxAmount, "Transfer amount exceeds the maxTxAmount.");
+            require(tAmount <= _maxTxAmount, "Transfer amount exceeds the maxTxAmount");
             require(!isBlacklisted(sender) || !isBlacklisted(recipient), "Sniper Rejected");
+            require(balanceOf(recipient)+tAmount <= _maxHoldAmount, "Receiver address exceeds the maxHoldAmount");
         }
 
         uint32 _previoustotalTaxPercent;
@@ -408,7 +415,7 @@ contract YeagerInu is Context, IERC20Metadata, Ownable {
         _rOwned[burnAddress] += rFee._fee0;
         _rOwned[_governingTaxes._wallet1] += rFee._fee1;
         _rOwned[_governingTaxes._wallet2] += rFee._fee2;
-        _reflectFee(rFee._fee3, tFee._fee3);
+        _reflectFee(rFee._fee3, tFee._fee0+tFee._fee1+tFee._fee2+tFee._fee3);
 
         if (_isExcluded[sender]) _tOwned[sender] = _tOwned[sender] - tAmount;
         if (_isExcluded[recipient]) _tOwned[recipient] = _tOwned[recipient] + tTransferAmount;
