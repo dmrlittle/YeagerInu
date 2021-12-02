@@ -291,6 +291,7 @@ contract YeagerInu is Context, IERC20Metadata, Ownable {
         _governingTaxes._split3 = 20;
 
         _maxHoldAmount = _tTotal; //Removing the max hold limit of 2%
+        _taxReverted = true;
     }
 
     function setTaxes(
