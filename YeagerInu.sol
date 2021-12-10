@@ -110,13 +110,13 @@ contract YeagerInu is Context, IERC20Metadata, Ownable {
     uint256 private constant _startingSupply = 100_000_000_000_000_000; //100 Quadrillion
     
     uint256 private constant MAX = ~uint256(0);
-    uint256 private constant _tTotal = _startingSupply * 10**18;
+    uint256 private constant _tTotal = _startingSupply * 10**9;
     uint256 private _rTotal = (MAX - (MAX % _tTotal));
     uint256 private _tFeeTotal;
     
     string private constant _name = "Yeager Inu";
     string private constant _symbol = "YEAGER";
-    uint8 private constant _decimals = 18;
+    uint8 private constant _decimals = 9;
 
     address public constant burnAddress = 0x000000000000000000000000000000000000dEaD; 
 
@@ -147,9 +147,9 @@ contract YeagerInu is Context, IERC20Metadata, Ownable {
         
 
         //Max TX amount is 100% of the total supply, will be updated when token gets into circulation (anti-whale)
-        _maxTxAmount = (_startingSupply * 10**18); 
+        _maxTxAmount = (_startingSupply * 10**9); 
         //Max Hold amount is 2% of the total supply. (Only for first 24 hours) (anti-whale) 
-        _maxHoldAmount = ((_startingSupply * 10**18) * 2) / 100;
+        _maxHoldAmount = ((_startingSupply * 10**9) * 2) / 100;
 
         //Excluding Owner and Other Governing Wallets From Reward System;
         excludeFromFee(owner());
