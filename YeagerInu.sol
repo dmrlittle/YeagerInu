@@ -405,7 +405,9 @@ contract YeagerInu is Context, IERC20Metadata, Ownable {
         if(_hasLimits(sender, recipient)) {
             require(tAmount <= _maxTxAmount, "Transfer amount exceeds the maxTxAmount");
             require(!isBlacklisted(sender) || !isBlacklisted(recipient), "Sniper Rejected");
-            require(balanceOf(recipient)+tAmount <= _maxHoldAmount, "Receiver address exceeds the maxHoldAmount");
+            if(!_isLiquidityPool[recipient]) {
+                require(balanceOf(recipient)+tAmount <= _maxHoldAmount, "Receiver address exceeds the maxHoldAmount");
+            }
         }
 
         uint32 _previoustotalTaxPercent;

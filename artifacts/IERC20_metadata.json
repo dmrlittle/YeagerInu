@@ -210,18 +210,18 @@
 			"bytecodeHash": "ipfs"
 		},
 		"optimizer": {
-			"enabled": false,
+			"enabled": true,
 			"runs": 200
 		},
 		"remappings": []
 	},
 	"sources": {
 		"Testing/YeagerInu.sol": {
-			"keccak256": "0x6444349617f79ad3a4ca910d9d5fc070d38cef683fda53fcdb0504db14cf2bb8",
+			"keccak256": "0xc43f5513f9eba03fa98a9c555962787939819078473125d725b944ed1efcc6a1",
 			"license": "Unlicensed",
 			"urls": [
-				"bzz-raw://3e0f8a744e716d76ebf724d31d6e75ad392f4978790d123753674ed002a232ec",
-				"dweb:/ipfs/QmczR7PaWpq5kGb5sgMneCUqgaDPJj8H3JYoooDKeURSTG"
+				"bzz-raw://953ac2da377fe5eca8821bfb0e70e4eac643dbe00a02282e6e9d0d9461965747",
+				"dweb:/ipfs/QmSkmdxyirnJ3W34QpP7zjaayz3KUtcKmK5qgZT8ZRM2Jn"
 			]
 		}
 	},
