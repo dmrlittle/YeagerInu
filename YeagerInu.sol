@@ -114,8 +114,8 @@ contract YeagerInu is Context, IERC20Metadata, Ownable {
     uint256 private _rTotal = (MAX - (MAX % _tTotal));
     uint256 private _tFeeTotal;
     
-    string private constant _name = "";
-    string private constant _symbol = "";
+    string private constant _name = "Yeager Inu";
+    string private constant _symbol = "YEAGER";
     uint8 private constant _decimals = 18;
 
     address public constant burnAddress = 0x000000000000000000000000000000000000dEaD; 

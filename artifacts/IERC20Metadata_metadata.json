@@ -256,11 +256,11 @@
 	},
 	"sources": {
 		"Testing/YeagerInu.sol": {
-			"keccak256": "0x1a9ebb95fd7e2f025f423778b8963df1da18851d1544c756bd82d62873d4b7f6",
+			"keccak256": "0x7e59d4942d2086b4da29943f2a3b68778028a824e235e44084c83f2da1bfd659",
 			"license": "Unlicensed",
 			"urls": [
-				"bzz-raw://73ff8003ab44d3a4bb875fdfb528010cb834b4e429a82ecfa7b537c30d7a3fc3",
-				"dweb:/ipfs/QmVhaxFe18fhuVjK9QDnPKqzRPGyjJGnbat2KYi187u5PW"
+				"bzz-raw://fa432daf7314cf15cdf5dec111ee22f70c3a091197ea13bb9be41381db410b16",
+				"dweb:/ipfs/QmZUpJnbUPa7aFAYzRLt6FLyCrkrE9DawRd5v68P8AGfx3"
 			]
 		}
 	},
