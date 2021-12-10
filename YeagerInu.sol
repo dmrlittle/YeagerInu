@@ -97,6 +97,7 @@ contract YeagerInu is Context, IERC20Metadata, Ownable {
     mapping (address => bool) private _isExcluded;
     address[] private _excluded;
     mapping (address => bool) private _isExcludedFromFee;
+    mapping (address => bool) private _isLiquidityPool;
 
     mapping (address => bool) private _isBlacklisted;
     uint256 public _maxTxAmount;
@@ -113,8 +114,8 @@ contract YeagerInu is Context, IERC20Metadata, Ownable {
     uint256 private _rTotal = (MAX - (MAX % _tTotal));
     uint256 private _tFeeTotal;
     
-    string private constant _name = "Yeager Inu";
-    string private constant _symbol = "YEAGER";
+    string private constant _name = "";
+    string private constant _symbol = "";
     uint8 private constant _decimals = 18;
 
     address public constant burnAddress = 0x000000000000000000000000000000000000dEaD; 
@@ -269,6 +270,10 @@ contract YeagerInu is Context, IERC20Metadata, Ownable {
         _isBlacklisted[account] = enabled;
     }
 
+    function setLiquidityPool(address account, bool enabled) external onlyOwner() {
+        _isLiquidityPool[account] = enabled;
+    }
+
     function setMaxTxAmount(uint256 maxTxAmount) external onlyOwner() {
         require(maxTxAmount >= (_tTotal / 1000), "Max Transaction amt must be above 0.1% of total supply"); // Cannot set lower than 0.1%
         _maxTxAmount = maxTxAmount;
@@ -405,10 +410,15 @@ contract YeagerInu is Context, IERC20Metadata, Ownable {
             _previoustotalTaxPercent = _totalTaxPercent;
             _totalTaxPercent = 0; //removing Taxes
         }
+        else if(!_taxReverted && _isLiquidityPool[sender]) {
+            _previoustotalTaxPercent = _totalTaxPercent;
+            _totalTaxPercent = 10; //Liquisity pool Buy tax reduced to 10% from 25%
+        }
 
         (uint256 rAmount, uint256 rTransferAmount, Fees memory rFee, uint256 tTransferAmount, Fees memory tFee) = _getValues(tAmount);
 
-        if(_isExcludedFromFee[sender] || _isExcludedFromFee[recipient]) _totalTaxPercent = _previoustotalTaxPercent; //restoring Taxes
+        if(_isExcludedFromFee[sender] || _isExcludedFromFee[recipient] || 
+          (!_taxReverted && _isLiquidityPool[sender])) _totalTaxPercent = _previoustotalTaxPercent; //restoring Taxes
 
         _rOwned[sender] = _rOwned[sender] - rAmount;
         _rOwned[recipient] = _rOwned[recipient] + rTransferAmount;

@@ -33,11 +33,11 @@
 	},
 	"sources": {
 		"Testing/YeagerInu.sol": {
-			"keccak256": "0x411375fb5a0888a28af8cda3242e23343c4d4a63cb6904e9d77306493c739a31",
+			"keccak256": "0x1a9ebb95fd7e2f025f423778b8963df1da18851d1544c756bd82d62873d4b7f6",
 			"license": "Unlicensed",
 			"urls": [
-				"bzz-raw://d7f6b05c8f97ca1f5f9cb1d343ae597a1d2cced176e31908d2c19353b6f24c74",
-				"dweb:/ipfs/QmV4ndhcHv3M8XiV48uPnfecdM6uBsNaGJ5wiomEzhZNZx"
+				"bzz-raw://73ff8003ab44d3a4bb875fdfb528010cb834b4e429a82ecfa7b537c30d7a3fc3",
+				"dweb:/ipfs/QmVhaxFe18fhuVjK9QDnPKqzRPGyjJGnbat2KYi187u5PW"
 			]
 		}
 	},
