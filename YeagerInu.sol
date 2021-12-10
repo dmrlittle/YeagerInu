@@ -260,6 +260,10 @@ contract YeagerInu is Context, IERC20Metadata, Ownable {
         return _isBlacklisted[account];
     }
 
+    function isLiquidityPool(address account) public view returns (bool) {
+        return _isLiquidityPool[account];
+    }
+
     function _hasLimits(address from, address to) private view returns (bool) {
         return from != owner()
             && to != owner()
