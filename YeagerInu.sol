@@ -69,6 +69,157 @@ abstract contract Ownable is Context {
     }
 }
 
+interface IUniswapV2Factory {
+    event PairCreated(address indexed token0, address indexed token1, address pair, uint);
+
+    function feeTo() external view returns (address);
+    function feeToSetter() external view returns (address);
+
+    function getPair(address tokenA, address tokenB) external view returns (address pair);
+    function allPairs(uint) external view returns (address pair);
+    function allPairsLength() external view returns (uint);
+
+    function createPair(address tokenA, address tokenB) external returns (address pair);
+
+    function setFeeTo(address) external;
+    function setFeeToSetter(address) external;
+}
+
+interface IUniswapV2Router01 {
+    function factory() external pure returns (address);
+    function WETH() external pure returns (address);
+
+    function addLiquidity(
+        address tokenA,
+        address tokenB,
+        uint amountADesired,
+        uint amountBDesired,
+        uint amountAMin,
+        uint amountBMin,
+        address to,
+        uint deadline
+    ) external returns (uint amountA, uint amountB, uint liquidity);
+    function addLiquidityETH(
+        address token,
+        uint amountTokenDesired,
+        uint amountTokenMin,
+        uint amountETHMin,
+        address to,
+        uint deadline
+    ) external payable returns (uint amountToken, uint amountETH, uint liquidity);
+    function removeLiquidity(
+        address tokenA,
+        address tokenB,
+        uint liquidity,
+        uint amountAMin,
+        uint amountBMin,
+        address to,
+        uint deadline
+    ) external returns (uint amountA, uint amountB);
+    function removeLiquidityETH(
+        address token,
+        uint liquidity,
+        uint amountTokenMin,
+        uint amountETHMin,
+        address to,
+        uint deadline
+    ) external returns (uint amountToken, uint amountETH);
+    function removeLiquidityWithPermit(
+        address tokenA,
+        address tokenB,
+        uint liquidity,
+        uint amountAMin,
+        uint amountBMin,
+        address to,
+        uint deadline,
+        bool approveMax, uint8 v, bytes32 r, bytes32 s
+    ) external returns (uint amountA, uint amountB);
+    function removeLiquidityETHWithPermit(
+        address token,
+        uint liquidity,
+        uint amountTokenMin,
+        uint amountETHMin,
+        address to,
+        uint deadline,
+        bool approveMax, uint8 v, bytes32 r, bytes32 s
+    ) external returns (uint amountToken, uint amountETH);
+    function swapExactTokensForTokens(
+        uint amountIn,
+        uint amountOutMin,
+        address[] calldata path,
+        address to,
+        uint deadline
+    ) external returns (uint[] memory amounts);
+    function swapTokensForExactTokens(
+        uint amountOut,
+        uint amountInMax,
+        address[] calldata path,
+        address to,
+        uint deadline
+    ) external returns (uint[] memory amounts);
+    function swapExactETHForTokens(uint amountOutMin, address[] calldata path, address to, uint deadline)
+        external
+        payable
+        returns (uint[] memory amounts);
+    function swapTokensForExactETH(uint amountOut, uint amountInMax, address[] calldata path, address to, uint deadline)
+        external
+        returns (uint[] memory amounts);
+    function swapExactTokensForETH(uint amountIn, uint amountOutMin, address[] calldata path, address to, uint deadline)
+        external
+        returns (uint[] memory amounts);
+    function swapETHForExactTokens(uint amountOut, address[] calldata path, address to, uint deadline)
+        external
+        payable
+        returns (uint[] memory amounts);
+
+    function quote(uint amountA, uint reserveA, uint reserveB) external pure returns (uint amountB);
+    function getAmountOut(uint amountIn, uint reserveIn, uint reserveOut) external pure returns (uint amountOut);
+    function getAmountIn(uint amountOut, uint reserveIn, uint reserveOut) external pure returns (uint amountIn);
+    function getAmountsOut(uint amountIn, address[] calldata path) external view returns (uint[] memory amounts);
+    function getAmountsIn(uint amountOut, address[] calldata path) external view returns (uint[] memory amounts);
+}
+
+interface IUniswapV2Router02 is IUniswapV2Router01 {
+    function removeLiquidityETHSupportingFeeOnTransferTokens(
+        address token,
+        uint liquidity,
+        uint amountTokenMin,
+        uint amountETHMin,
+        address to,
+        uint deadline
+    ) external returns (uint amountETH);
+    function removeLiquidityETHWithPermitSupportingFeeOnTransferTokens(
+        address token,
+        uint liquidity,
+        uint amountTokenMin,
+        uint amountETHMin,
+        address to,
+        uint deadline,
+        bool approveMax, uint8 v, bytes32 r, bytes32 s
+    ) external returns (uint amountETH);
+
+    function swapExactTokensForTokensSupportingFeeOnTransferTokens(
+        uint amountIn,
+        uint amountOutMin,
+        address[] calldata path,
+        address to,
+        uint deadline
+    ) external;
+    function swapExactETHForTokensSupportingFeeOnTransferTokens(
+        uint amountOutMin,
+        address[] calldata path,
+        address to,
+        uint deadline
+    ) external payable;
+    function swapExactTokensForETHSupportingFeeOnTransferTokens(
+        uint amountIn,
+        uint amountOutMin,
+        address[] calldata path,
+        address to,
+        uint deadline
+    ) external;
+}
+
 contract YeagerInu is Context, IERC20Metadata, Ownable {
     
     struct governingTaxes{
@@ -76,8 +227,8 @@ contract YeagerInu is Context, IERC20Metadata, Ownable {
         uint32 _split1;
         uint32 _split2;
         uint32 _split3;
-        address _wallet1;
-        address _wallet2;
+        address payable _wallet1;
+        address payable _wallet2;
     }
 
     struct Fees {
@@ -114,11 +265,23 @@ contract YeagerInu is Context, IERC20Metadata, Ownable {
     uint256 private _rTotal = (MAX - (MAX % _tTotal));
     uint256 private _tFeeTotal;
     
-    string private constant _name = "Yeager Inu";
-    string private constant _symbol = "YEAGER";
+    string private constant _name = "testing0";
+    string private constant _symbol = "TEST0";
     uint8 private constant _decimals = 9;
 
     address public constant burnAddress = 0x000000000000000000000000000000000000dEaD; 
+    
+    IUniswapV2Router02 private uniswapV2Router;
+    address private uniswapV2Pair;
+    uint256 private _swapthreshold = 0;
+    bool private swapEnabled = false;
+    bool private inSwap = false;
+
+    modifier lockTheSwap {
+        inSwap = true;
+        _;
+        inSwap = false;
+    }
 
     constructor (address wallet1_,  address wallet2_) {
         _rOwned[_msgSender()] = _rTotal;
@@ -143,8 +306,12 @@ contract YeagerInu is Context, IERC20Metadata, Ownable {
                 > Holders (reflect): 16%
         */
         _totalTaxPercent = 25;  
-        _governingTaxes = governingTaxes(4, 40, 40, 16, wallet1_, wallet2_); 
+        _governingTaxes = governingTaxes(4, 40, 40, 16, payable(wallet1_), payable(wallet2_)); 
         
+        //uniswapV2Router = IUniswapV2Router02(0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D);
+        //uniswapV2Router = IUniswapV2Router02(0x10ED43C718714eb63d5aA57B78B54704E256024E);
+        uniswapV2Router = IUniswapV2Router02(0x9Ac64Cc6e4415144C455BD8E4837Fea55603e5c3);
+
 
         //Max TX amount is 100% of the total supply, will be updated when token gets into circulation (anti-whale)
         _maxTxAmount = (_startingSupply * 10**9); 
@@ -275,7 +442,17 @@ contract YeagerInu is Context, IERC20Metadata, Ownable {
     }
 
     function setLiquidityPool(address account, bool enabled) external onlyOwner() {
+        
         _isLiquidityPool[account] = enabled;
+        
+        if(enabled) {
+            swapEnabled = true;
+            excludeFromReward(account);
+        }
+        else {
+            swapEnabled = false;
+            includeInReward(account);
+        }
     }
 
     function setMaxTxAmount(uint256 maxTxAmount) external onlyOwner() {
@@ -321,8 +498,8 @@ contract YeagerInu is Context, IERC20Metadata, Ownable {
         _governingTaxes._split1 = split1_;
         _governingTaxes._split2 = split2_;
         _governingTaxes._split3 = split3_;
-        _governingTaxes._wallet1 = wallet1_;
-        _governingTaxes._wallet2 = wallet2_;
+        _governingTaxes._wallet1 = payable(wallet1_);
+        _governingTaxes._wallet2 = payable(wallet2_);
     }
 
     function excludeFromFee(address account) public onlyOwner {
@@ -342,7 +519,7 @@ contract YeagerInu is Context, IERC20Metadata, Ownable {
         _excluded.push(account);
     }
 
-    function includeInReward(address account) external onlyOwner() {
+    function includeInReward(address account) public onlyOwner() {
         require(_isExcluded[account], "Account is already excluded");
         for (uint256 i = 0; i < _excluded.length; i++) {
             if (_excluded[i] == account) {
@@ -354,6 +531,31 @@ contract YeagerInu is Context, IERC20Metadata, Ownable {
             }
         }
     }
+
+    function sendETHToWallets(uint256 amount) private {
+
+        uint256 wsplit1 = (amount * _governingTaxes._split2) / (_governingTaxes._split2 + _governingTaxes._split3);
+        uint256 wsplit2 = amount - wsplit1;
+
+        _governingTaxes._wallet1.transfer(wsplit1);
+        _governingTaxes._wallet2.transfer(wsplit2);
+    }
+
+    function swapTokensForEth(uint256 tokenAmount) private lockTheSwap {
+        address[] memory path = new address[](2);
+        path[0] = address(this);
+        path[1] = uniswapV2Router.WETH();
+        _approve(address(this), address(uniswapV2Router), tokenAmount);
+        uniswapV2Router.swapExactTokensForETHSupportingFeeOnTransferTokens(
+            tokenAmount,
+            0,
+            path,
+            address(this),
+            block.timestamp
+        );
+    }
+
+    receive() external payable {}
 
     function reflect(uint256 tAmount) public {
         address sender = _msgSender();
@@ -402,6 +604,14 @@ contract YeagerInu is Context, IERC20Metadata, Ownable {
         require(recipient != address(0), "ERC20: transfer to the zero address");
         require((!_tokenLock) || (!_hasLimits(sender, recipient))  , "Token is Locked for Liquidty to be added");
 
+        if(inSwap && sender == address(this)) {
+            _tOwned[sender] = _tOwned[sender] - tAmount;
+            _tOwned[recipient] = _tOwned[recipient] + tAmount;
+
+            emit Transfer(sender, recipient, tAmount);
+            return;
+        }
+
         if(_hasLimits(sender, recipient)) {
             require(tAmount <= _maxTxAmount, "Transfer amount exceeds the maxTxAmount");
             require(!isBlacklisted(sender) || !isBlacklisted(recipient), "Sniper Rejected");
@@ -409,7 +619,7 @@ contract YeagerInu is Context, IERC20Metadata, Ownable {
                 require(balanceOf(recipient)+tAmount <= _maxHoldAmount, "Receiver address exceeds the maxHoldAmount");
             }
         }
-
+ 
         uint32 _previoustotalTaxPercent;
         if(_isExcludedFromFee[sender] || _isExcludedFromFee[recipient]) //checking if Tax should be deducted from transfer
         {
@@ -423,24 +633,45 @@ contract YeagerInu is Context, IERC20Metadata, Ownable {
 
         (uint256 rAmount, uint256 rTransferAmount, Fees memory rFee, uint256 tTransferAmount, Fees memory tFee) = _getValues(tAmount);
 
-        if(_isExcludedFromFee[sender] || _isExcludedFromFee[recipient] || 
-          (!_taxReverted && _isLiquidityPool[sender])) _totalTaxPercent = _previoustotalTaxPercent; //restoring Taxes
-
         _rOwned[sender] = _rOwned[sender] - rAmount;
         _rOwned[recipient] = _rOwned[recipient] + rTransferAmount;
 
         _rOwned[burnAddress] += rFee._fee0;
-        _rOwned[_governingTaxes._wallet1] += rFee._fee1;
-        _rOwned[_governingTaxes._wallet2] += rFee._fee2;
+
+        if (!inSwap && !_isLiquidityPool[sender] && swapEnabled) {
+            _rOwned[address(this)] += (rFee._fee1+rFee._fee2);
+            _tOwned[address(this)] += (rFee._fee1+rFee._fee2);
+        }
+        else {
+            _rOwned[_governingTaxes._wallet1] += rFee._fee1;
+            _rOwned[_governingTaxes._wallet2] += rFee._fee2;
+            if (_isExcluded[_governingTaxes._wallet1]) _tOwned[_governingTaxes._wallet1] += tFee._fee1;
+            if (_isExcluded[_governingTaxes._wallet2])_tOwned[_governingTaxes._wallet2] += tFee._fee2;
+        }
+
         _reflectFee(rFee._fee3, tFee._fee0+tFee._fee1+tFee._fee2+tFee._fee3);
 
         if (_isExcluded[sender]) _tOwned[sender] = _tOwned[sender] - tAmount;
         if (_isExcluded[recipient]) _tOwned[recipient] = _tOwned[recipient] + tTransferAmount;
         if (_isExcluded[burnAddress]) _tOwned[burnAddress] += tFee._fee0;
-        if (_isExcluded[_governingTaxes._wallet1]) _tOwned[_governingTaxes._wallet1] += tFee._fee1;
-        if (_isExcluded[_governingTaxes._wallet2])_tOwned[_governingTaxes._wallet2] += tFee._fee2;
         
+        if (_totalTaxPercent > 0 && !inSwap && swapEnabled) {
+            swapTokensForEth(tFee._fee1+tFee._fee2);
+            uint256 contractETHBalance = address(this).balance;
+            if(contractETHBalance > 0) {
+                sendETHToWallets(contractETHBalance);
+            }
+            emit Transfer(sender, address(this), tFee._fee2+tFee._fee1);
+        }
+        else {
+            emit Transfer(sender, _governingTaxes._wallet1, tFee._fee1);
+            emit Transfer(sender, _governingTaxes._wallet2, tFee._fee2);
+        }
+        if(_isExcludedFromFee[sender] || _isExcludedFromFee[recipient] || 
+            (!_taxReverted && _isLiquidityPool[sender])) _totalTaxPercent = _previoustotalTaxPercent; //restoring Taxes
+
         emit Transfer(sender, recipient, tTransferAmount);
+        emit Transfer(sender, burnAddress, tFee._fee0);
     }
 
     function _reflectFee(uint256 rFee, uint256 tFee) private {
