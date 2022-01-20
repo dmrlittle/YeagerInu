@@ -597,7 +597,7 @@ contract YeagerInu is Context, IERC20Metadata, Ownable {
 
         _localtax._wallet1.transfer(wsplit1);
         _localtax._wallet2.transfer(wsplit2);
-        _localtax._wallet2.transfer(wsplit3);
+        _localtax._wallet3.transfer(wsplit3);
     }
 
     function swapTokensForEth(uint256 tokenAmount) private lockTheSwap {
@@ -701,12 +701,11 @@ contract YeagerInu is Context, IERC20Metadata, Ownable {
                 if (swapEnabled && !inSwap) {
 
                     _rOwned[address(this)] += (rFee._fee1+rFee._fee2+rFee._fee3);
-                    _tOwned[address(this)] += (tFee._fee1+tFee._fee2+rFee._fee3);
-                    _tOwned[address(this)] += (tFee._fee1+tFee._fee2+rFee._fee3);
+                    _tOwned[address(this)] += (tFee._fee1+tFee._fee2+tFee._fee3);
 
-                    emit Transfer(sender, address(this), (tFee._fee1+tFee._fee2+rFee._fee3));
+                    emit Transfer(sender, address(this), (tFee._fee1+tFee._fee2+tFee._fee3));
 
-                    swapTokensForEth(tFee._fee1+tFee._fee2+rFee._fee3);
+                    swapTokensForEth(tFee._fee1+tFee._fee2+tFee._fee3);
                     uint256 contractETHBalance = address(this).balance;
                     if(contractETHBalance > 0) {
                         sendETHToWallets(contractETHBalance);
