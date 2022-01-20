@@ -6,69 +6,6 @@
 	"output": {
 		"abi": [
 			{
-				"anonymous": false,
-				"inputs": [
-					{
-						"indexed": true,
-						"internalType": "address",
-						"name": "token0",
-						"type": "address"
-					},
-					{
-						"indexed": true,
-						"internalType": "address",
-						"name": "token1",
-						"type": "address"
-					},
-					{
-						"indexed": false,
-						"internalType": "address",
-						"name": "pair",
-						"type": "address"
-					},
-					{
-						"indexed": false,
-						"internalType": "uint256",
-						"name": "",
-						"type": "uint256"
-					}
-				],
-				"name": "PairCreated",
-				"type": "event"
-			},
-			{
-				"inputs": [
-					{
-						"internalType": "uint256",
-						"name": "",
-						"type": "uint256"
-					}
-				],
-				"name": "allPairs",
-				"outputs": [
-					{
-						"internalType": "address",
-						"name": "pair",
-						"type": "address"
-					}
-				],
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
-				"inputs": [],
-				"name": "allPairsLength",
-				"outputs": [
-					{
-						"internalType": "uint256",
-						"name": "",
-						"type": "uint256"
-					}
-				],
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
 				"inputs": [
 					{
 						"internalType": "address",
@@ -89,82 +26,6 @@
 						"type": "address"
 					}
 				],
-				"stateMutability": "nonpayable",
-				"type": "function"
-			},
-			{
-				"inputs": [],
-				"name": "feeTo",
-				"outputs": [
-					{
-						"internalType": "address",
-						"name": "",
-						"type": "address"
-					}
-				],
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
-				"inputs": [],
-				"name": "feeToSetter",
-				"outputs": [
-					{
-						"internalType": "address",
-						"name": "",
-						"type": "address"
-					}
-				],
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
-				"inputs": [
-					{
-						"internalType": "address",
-						"name": "tokenA",
-						"type": "address"
-					},
-					{
-						"internalType": "address",
-						"name": "tokenB",
-						"type": "address"
-					}
-				],
-				"name": "getPair",
-				"outputs": [
-					{
-						"internalType": "address",
-						"name": "pair",
-						"type": "address"
-					}
-				],
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
-				"inputs": [
-					{
-						"internalType": "address",
-						"name": "",
-						"type": "address"
-					}
-				],
-				"name": "setFeeTo",
-				"outputs": [],
-				"stateMutability": "nonpayable",
-				"type": "function"
-			},
-			{
-				"inputs": [
-					{
-						"internalType": "address",
-						"name": "",
-						"type": "address"
-					}
-				],
-				"name": "setFeeToSetter",
-				"outputs": [],
 				"stateMutability": "nonpayable",
 				"type": "function"
 			}
@@ -197,11 +58,11 @@
 	},
 	"sources": {
 		"Testing/YeagerInu.sol": {
-			"keccak256": "0xce2f591a3e3f334a0de6794076a97b89150cae7675abea7f20f4c7587ebdfc86",
+			"keccak256": "0xc739a3b6d51f28d843a5faae1627051e60ab21773f073e281324aafa2389768d",
 			"license": "Unlicensed",
 			"urls": [
-				"bzz-raw://21fecd6f8a27068cb303997c07bc4d03a25d3685b5f5cfe42fcd9d090cc3bf3d",
-				"dweb:/ipfs/QmPcPEGr9qx7NN8irfzFmeoNiW4FmpLNcH7VpaPa2B9U4Y"
+				"bzz-raw://ae56bff3794aad11bcedab59112bd81f13e984064b968dcef87e09c614bd15a2",
+				"dweb:/ipfs/QmcMGiKE2mtgKpZBrT3JfiTRwHpdiKwHCLFb8eQUbETvCr"
 			]
 		}
 	},

@@ -69,6 +69,7 @@ abstract contract Ownable is Context {
     }
 }
 
+/*
 interface IUniswapV2Factory {
     event PairCreated(address indexed token0, address indexed token1, address pair, uint);
 
@@ -219,10 +220,32 @@ interface IUniswapV2Router02 is IUniswapV2Router01 {
         uint deadline
     ) external;
 }
+*/
+
+interface IUniswapV2Factory {
+    function createPair(address tokenA, address tokenB) external returns (address pair);
+}
+
+interface IUniswapV2Router02{
+    function factory() external pure returns (address);
+    function WETH() external pure returns (address);
+    function swapExactTokensForETH(uint amountIn, uint amountOutMin, address[] calldata path, address to, uint deadline)
+        external
+        returns (uint[] memory amounts);
+    function addLiquidityETH(
+        address token,
+        uint amountTokenDesired,
+        uint amountTokenMin,
+        uint amountETHMin,
+        address to,
+        uint deadline
+    ) external payable returns (uint amountToken, uint amountETH, uint liquidity);
+}
 
 contract YeagerInu is Context, IERC20Metadata, Ownable {
     
     struct governingTaxes{
+        uint32 _totalTaxPercent;
         uint32 _split0;
         uint32 _split1;
         uint32 _split2;
@@ -238,8 +261,8 @@ contract YeagerInu is Context, IERC20Metadata, Ownable {
         uint256 _fee3;
     }
     
-    uint32 private _totalTaxPercent;
-    governingTaxes private _governingTaxes;
+    governingTaxes[] private _governingTaxes;
+    governingTaxes private _localtax;
     
     mapping (address => uint256) private _rOwned;
     mapping (address => uint256) private _tOwned;
@@ -252,10 +275,9 @@ contract YeagerInu is Context, IERC20Metadata, Ownable {
 
     mapping (address => bool) private _isBlacklisted;
     uint256 public _maxTxAmount;
-    uint256 private _maxHoldAmount;
+    uint256 public _maxHoldAmount;
 
     bool private _tokenLock = true; //Locking the token until Liquidty is added
-    bool private _taxReverted = false;
     uint256 public _tokenCommenceTime;
 
     uint256 private constant _startingSupply = 100_000_000_000_000_000; //100 Quadrillion
@@ -272,7 +294,7 @@ contract YeagerInu is Context, IERC20Metadata, Ownable {
     address public constant burnAddress = 0x000000000000000000000000000000000000dEaD; 
     
     IUniswapV2Router02 private uniswapV2Router;
-    address private uniswapV2Pair;
+    address public uniswapV2Pair;
     uint256 private _swapthreshold = 0;
     bool private swapEnabled = false;
     bool private inSwap = false;
@@ -298,20 +320,30 @@ contract YeagerInu is Context, IERC20Metadata, Ownable {
         /*
             >>> First 24 hour Tax <<<
 
+            > Buy <
             Total Tax Percentage per Transaction : 25%
             Tax Split:
                 > Burn (burnAddress): 4%
                 > Dev Wallet (wallet1): 40% 
                 > Marketing Wallet (wallet2): 40%
                 > Holders (reflect): 16%
+
+            > Sell <
+            Total Tax Percentage per Transaction : 10%
+            Tax Split:
+                > Burn (burnAddress): 4%
+                > Dev Wallet (wallet1): 40% 
+                > Marketing Wallet (wallet2): 40%
+                > Holders (reflect): 16%
         */
-        _totalTaxPercent = 25;  
-        _governingTaxes = governingTaxes(4, 40, 40, 16, payable(wallet1_), payable(wallet2_)); 
-        
+
+        _governingTaxes.push(governingTaxes(10, 4, 40, 40, 16, payable(wallet1_), payable(wallet2_)));
+        _governingTaxes.push(governingTaxes(25, 4, 40, 40, 16, payable(wallet1_), payable(wallet2_)));
+        _localtax = _governingTaxes[1];
         //uniswapV2Router = IUniswapV2Router02(0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D);
         //uniswapV2Router = IUniswapV2Router02(0x10ED43C718714eb63d5aA57B78B54704E256024E);
         uniswapV2Router = IUniswapV2Router02(0x9Ac64Cc6e4415144C455BD8E4837Fea55603e5c3);
-
+        uniswapV2Pair = IUniswapV2Factory(uniswapV2Router.factory()).createPair(address(this), uniswapV2Router.WETH());
 
         //Max TX amount is 100% of the total supply, will be updated when token gets into circulation (anti-whale)
         _maxTxAmount = (_startingSupply * 10**9); 
@@ -324,6 +356,7 @@ contract YeagerInu is Context, IERC20Metadata, Ownable {
         excludeFromReward(burnAddress);
         excludeFromReward(wallet1_);
         excludeFromReward(wallet2_);
+        excludeFromReward(address(this));
 
         emit Transfer(address(0), _msgSender(), _tTotal);
     }
@@ -398,7 +431,7 @@ contract YeagerInu is Context, IERC20Metadata, Ownable {
         return _tFeeTotal;
     }
 
-    function currentTaxes() public view 
+    function buyTaxes() public view 
     returns (
         uint32 total_Tax_Percent,
         uint32 burn_Split,
@@ -407,11 +440,28 @@ contract YeagerInu is Context, IERC20Metadata, Ownable {
         uint32 reflect_Split
     ) {
         return (
-            _totalTaxPercent,
-            _governingTaxes._split0,
-            _governingTaxes._split1,
-            _governingTaxes._split2,
-            _governingTaxes._split3
+            _governingTaxes[0]._totalTaxPercent,
+            _governingTaxes[0]._split0,
+            _governingTaxes[0]._split1,
+            _governingTaxes[0]._split2,
+            _governingTaxes[0]._split3
+        );
+    }
+
+    function sellTaxes() public view 
+    returns (
+        uint32 total_Tax_Percent,
+        uint32 burn_Split,
+        uint32 governingSplit_Wallet1,
+        uint32 governingSplit_Wallet2,
+        uint32 reflect_Split
+    ) {
+        return (
+            _governingTaxes[1]._totalTaxPercent,
+            _governingTaxes[1]._split0,
+            _governingTaxes[1]._split1,
+            _governingTaxes[1]._split2,
+            _governingTaxes[1]._split3
         );
     }
 
@@ -460,27 +510,18 @@ contract YeagerInu is Context, IERC20Metadata, Ownable {
         _maxTxAmount = maxTxAmount;
     }
 
+    function setMaxHoldAmount(uint256 maxHoldAmount) external onlyOwner() {
+        require(maxHoldAmount >= (_tTotal / 1000), "Max Hold amt must be above 0.1% of total supply"); // Cannot set lower than 0.1%
+        _maxHoldAmount = maxHoldAmount;
+    }
+
     function unlockToken() external onlyOwner() {
         _tokenLock = false;
         _tokenCommenceTime = block.timestamp;
     }
 
-    function revertTax() external {
-        require(!_tokenLock, "Token is Locked for Liquidty to be added");
-        require(block.timestamp - _tokenCommenceTime > 86400, "Tax can be reverted only after 24hrs"); //check for 24 hours timeperiod
-        require(!_taxReverted, "Tax had been Reverted!"); //To prevent taxRevert more than once 
-
-        _totalTaxPercent = 10;
-        _governingTaxes._split0 = 10;
-        _governingTaxes._split1 = 20;
-        _governingTaxes._split2 = 50;
-        _governingTaxes._split3 = 20;
-
-        _maxHoldAmount = _tTotal; //Removing the max hold limit of 2%
-        _taxReverted = true;
-    }
-
     function setTaxes(
+        uint256 type_,
         uint32 totalTaxPercent_, 
         uint32 split0_, 
         uint32 split1_, 
@@ -490,16 +531,17 @@ contract YeagerInu is Context, IERC20Metadata, Ownable {
         address wallet2_
     ) external onlyOwner() {
         require(wallet1_ != address(0) && wallet2_ != address(0), "Tax Wallets assigned zero address !");
-        require(totalTaxPercent_ <= 10, "Total Tax Percent Exceeds 10% !"); // Prevents owner from manipulating Tax.
         require(split0_+split1_+split2_+split3_ == 100, "Split Percentages does not sum upto 100 !");
 
-        _totalTaxPercent = totalTaxPercent_;
-        _governingTaxes._split0 = split0_;
-        _governingTaxes._split1 = split1_;
-        _governingTaxes._split2 = split2_;
-        _governingTaxes._split3 = split3_;
-        _governingTaxes._wallet1 = payable(wallet1_);
-        _governingTaxes._wallet2 = payable(wallet2_);
+        _governingTaxes[type_]._totalTaxPercent = totalTaxPercent_;
+        _governingTaxes[type_]._split0 = split0_;
+        _governingTaxes[type_]._split1 = split1_;
+        _governingTaxes[type_]._split2 = split2_;
+        _governingTaxes[type_]._split3 = split3_;
+        _governingTaxes[type_]._wallet1 = payable(wallet1_);
+        _governingTaxes[type_]._wallet2 = payable(wallet2_);
+
+        if(type_ == 1) _localtax = _governingTaxes[type_];
     }
 
     function excludeFromFee(address account) public onlyOwner {
@@ -534,11 +576,11 @@ contract YeagerInu is Context, IERC20Metadata, Ownable {
 
     function sendETHToWallets(uint256 amount) private {
 
-        uint256 wsplit1 = (amount * _governingTaxes._split2) / (_governingTaxes._split2 + _governingTaxes._split3);
+        uint256 wsplit1 = (amount * _localtax._split2) / (_localtax._split2 + _localtax._split3);
         uint256 wsplit2 = amount - wsplit1;
 
-        _governingTaxes._wallet1.transfer(wsplit1);
-        _governingTaxes._wallet2.transfer(wsplit2);
+        _localtax._wallet1.transfer(wsplit1);
+        _localtax._wallet2.transfer(wsplit2);
     }
 
     function swapTokensForEth(uint256 tokenAmount) private lockTheSwap {
@@ -546,7 +588,8 @@ contract YeagerInu is Context, IERC20Metadata, Ownable {
         path[0] = address(this);
         path[1] = uniswapV2Router.WETH();
         _approve(address(this), address(uniswapV2Router), tokenAmount);
-        uniswapV2Router.swapExactTokensForETHSupportingFeeOnTransferTokens(
+
+        uniswapV2Router.swapExactTokensForETH(
             tokenAmount,
             0,
             path,
@@ -604,74 +647,81 @@ contract YeagerInu is Context, IERC20Metadata, Ownable {
         require(recipient != address(0), "ERC20: transfer to the zero address");
         require((!_tokenLock) || (!_hasLimits(sender, recipient))  , "Token is Locked for Liquidty to be added");
 
-        if(inSwap && sender == address(this)) {
-            _tOwned[sender] = _tOwned[sender] - tAmount;
-            _tOwned[recipient] = _tOwned[recipient] + tAmount;
-
-            emit Transfer(sender, recipient, tAmount);
-            return;
-        }
-
-        if(_hasLimits(sender, recipient)) {
+        if(!inSwap && _hasLimits(sender, recipient)) {
             require(tAmount <= _maxTxAmount, "Transfer amount exceeds the maxTxAmount");
             require(!isBlacklisted(sender) || !isBlacklisted(recipient), "Sniper Rejected");
-            if(!_taxReverted && !_isLiquidityPool[recipient]) {
-                require(balanceOf(recipient)+tAmount <= _maxHoldAmount, "Receiver address exceeds the maxHoldAmount");
-            }
-        }
- 
-        uint32 _previoustotalTaxPercent;
-        if(_isExcludedFromFee[sender] || _isExcludedFromFee[recipient]) //checking if Tax should be deducted from transfer
-        {
-            _previoustotalTaxPercent = _totalTaxPercent;
-            _totalTaxPercent = 0; //removing Taxes
-        }
-        else if(!_taxReverted && _isLiquidityPool[sender]) {
-            _previoustotalTaxPercent = _totalTaxPercent;
-            _totalTaxPercent = 10; //Liquisity pool Buy tax reduced to 10% from 25%
+            require(balanceOf(recipient)+tAmount <= _maxHoldAmount, "Receiver address exceeds the maxHoldAmount");
         }
 
-        (uint256 rAmount, uint256 rTransferAmount, Fees memory rFee, uint256 tTransferAmount, Fees memory tFee) = _getValues(tAmount);
+        if(inSwap || _isExcludedFromFee[sender] || _isExcludedFromFee[recipient]) {
+            uint256 rAmount = tAmount * _getRate();
 
-        _rOwned[sender] = _rOwned[sender] - rAmount;
-        _rOwned[recipient] = _rOwned[recipient] + rTransferAmount;
-
-        _rOwned[burnAddress] += rFee._fee0;
-
-        if (!inSwap && !_isLiquidityPool[sender] && swapEnabled) {
-            _rOwned[address(this)] += (rFee._fee1+rFee._fee2);
-            _tOwned[address(this)] += (rFee._fee1+rFee._fee2);
-        }
-        else {
-            _rOwned[_governingTaxes._wallet1] += rFee._fee1;
-            _rOwned[_governingTaxes._wallet2] += rFee._fee2;
-            if (_isExcluded[_governingTaxes._wallet1]) _tOwned[_governingTaxes._wallet1] += tFee._fee1;
-            if (_isExcluded[_governingTaxes._wallet2])_tOwned[_governingTaxes._wallet2] += tFee._fee2;
-        }
-
-        _reflectFee(rFee._fee3, tFee._fee0+tFee._fee1+tFee._fee2+tFee._fee3);
-
-        if (_isExcluded[sender]) _tOwned[sender] = _tOwned[sender] - tAmount;
-        if (_isExcluded[recipient]) _tOwned[recipient] = _tOwned[recipient] + tTransferAmount;
-        if (_isExcluded[burnAddress]) _tOwned[burnAddress] += tFee._fee0;
+            _rOwned[sender] = _rOwned[sender] - rAmount;
+            _rOwned[recipient] = _rOwned[recipient] + rAmount;
         
-        if (_totalTaxPercent > 0 && !inSwap && swapEnabled) {
-            swapTokensForEth(tFee._fee1+tFee._fee2);
-            uint256 contractETHBalance = address(this).balance;
-            if(contractETHBalance > 0) {
-                sendETHToWallets(contractETHBalance);
-            }
-            emit Transfer(sender, address(this), tFee._fee2+tFee._fee1);
+            if (_isExcluded[sender]) _tOwned[sender] = _tOwned[sender] - tAmount;
+            if (_isExcluded[recipient]) _tOwned[recipient] = _tOwned[recipient] + tAmount;
+
+            emit Transfer(sender, recipient, tAmount);
         }
         else {
-            emit Transfer(sender, _governingTaxes._wallet1, tFee._fee1);
-            emit Transfer(sender, _governingTaxes._wallet2, tFee._fee2);
-        }
-        if(_isExcludedFromFee[sender] || _isExcludedFromFee[recipient] || 
-            (!_taxReverted && _isLiquidityPool[sender])) _totalTaxPercent = _previoustotalTaxPercent; //restoring Taxes
 
-        emit Transfer(sender, recipient, tTransferAmount);
-        emit Transfer(sender, burnAddress, tFee._fee0);
+            if(_isLiquidityPool[sender]) _localtax = _governingTaxes[0];    
+                            
+            if (_localtax._totalTaxPercent > 0) {
+                (uint256 rAmount, uint256 rTransferAmount, Fees memory rFee, uint256 tTransferAmount, Fees memory tFee) = _getValues(tAmount);
+
+                if(_isLiquidityPool[sender]) _localtax = _governingTaxes[0];    
+                
+                _rOwned[sender] = _rOwned[sender] - rAmount;
+                _rOwned[recipient] = _rOwned[recipient] + rTransferAmount;
+                _rOwned[burnAddress] += rFee._fee0;
+
+                if (_isExcluded[sender]) _tOwned[sender] = _tOwned[sender] - tAmount;
+                if (_isExcluded[recipient]) _tOwned[recipient] = _tOwned[recipient] + tTransferAmount;
+                if (_isExcluded[burnAddress]) _tOwned[burnAddress] += tFee._fee0;
+
+                if (swapEnabled && !inSwap) {
+
+                    _rOwned[address(this)] += (rFee._fee1+rFee._fee2);
+                    _tOwned[address(this)] += (tFee._fee1+tFee._fee2);
+
+                    emit Transfer(sender, address(this), (tFee._fee1+tFee._fee2));
+
+                    swapTokensForEth(tFee._fee1+tFee._fee2);
+                    uint256 contractETHBalance = address(this).balance;
+                    if(contractETHBalance > 0) {
+                        sendETHToWallets(contractETHBalance);
+                    }
+                }
+
+                else {
+                    _rOwned[_localtax._wallet1] += rFee._fee1;
+                    _rOwned[_localtax._wallet2] += rFee._fee2;
+                    if (_isExcluded[_localtax._wallet1])_tOwned[_localtax._wallet1] += tFee._fee1;
+                    if (_isExcluded[_localtax._wallet2])_tOwned[_localtax._wallet2] += tFee._fee2;
+
+                    emit Transfer(sender, _localtax._wallet1, tFee._fee1);
+                    emit Transfer(sender, _localtax._wallet2, tFee._fee2);
+                }
+
+                _reflectFee(rFee._fee3, tFee._fee0+tFee._fee1+tFee._fee2+tFee._fee3);
+
+                emit Transfer(sender, burnAddress, tFee._fee0);
+                emit Transfer(sender, recipient, tTransferAmount);
+            }
+            else {
+                uint256 rAmount = tAmount * _getRate();
+
+                _rOwned[sender] = _rOwned[sender] - rAmount;
+                _rOwned[recipient] = _rOwned[recipient] + rAmount;
+            
+                if (_isExcluded[sender]) _tOwned[sender] = _tOwned[sender] - tAmount;
+                if (_isExcluded[recipient]) _tOwned[recipient] = _tOwned[recipient] + tAmount;
+
+                emit Transfer(sender, recipient, tAmount);
+            }
+        }
     }
 
     function _reflectFee(uint256 rFee, uint256 tFee) private {
@@ -688,10 +738,10 @@ contract YeagerInu is Context, IERC20Metadata, Ownable {
 
     function _getTValues(uint256 tAmount) private view returns (uint256, Fees memory) {
         Fees memory tFee;
-        tFee._fee0 = (tAmount * _totalTaxPercent * _governingTaxes._split0) / 10**4;
-        tFee._fee1 = (tAmount * _totalTaxPercent * _governingTaxes._split1) / 10**4;
-        tFee._fee2 = (tAmount * _totalTaxPercent * _governingTaxes._split2) / 10**4;
-        tFee._fee3 = (tAmount * _totalTaxPercent * _governingTaxes._split3) / 10**4;
+        tFee._fee0 = (tAmount * _localtax._totalTaxPercent * _localtax._split0) / 10**4;
+        tFee._fee1 = (tAmount * _localtax._totalTaxPercent * _localtax._split1) / 10**4;
+        tFee._fee2 = (tAmount * _localtax._totalTaxPercent * _localtax._split2) / 10**4;
+        tFee._fee3 = (tAmount * _localtax._totalTaxPercent * _localtax._split3) / 10**4;
         uint256 tTransferAmount = tAmount - tFee._fee0 - tFee._fee1 - tFee._fee2 - tFee._fee3;
         return (tTransferAmount, tFee);
     }
