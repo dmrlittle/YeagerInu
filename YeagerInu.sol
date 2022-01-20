@@ -250,8 +250,10 @@ contract YeagerInu is Context, IERC20Metadata, Ownable {
         uint32 _split1;
         uint32 _split2;
         uint32 _split3;
+        uint32 _split4;
         address payable _wallet1;
         address payable _wallet2;
+        address payable _wallet3;
     }
 
     struct Fees {
@@ -259,6 +261,7 @@ contract YeagerInu is Context, IERC20Metadata, Ownable {
         uint256 _fee1;
         uint256 _fee2;
         uint256 _fee3;
+        uint256 _fee4;
     }
     
     governingTaxes[] private _governingTaxes;
@@ -305,16 +308,17 @@ contract YeagerInu is Context, IERC20Metadata, Ownable {
         inSwap = false;
     }
 
-    constructor (address wallet1_,  address wallet2_) {
+    constructor (address wallet1_,  address wallet2_,  address wallet3_) {
         _rOwned[_msgSender()] = _rTotal;
 
         /*
             Total Tax Percentage per Transaction : 10%
             Tax Split:
                 > Burn (burnAddress): 10%
-                > Dev Wallet (wallet1): 20% 
-                > Marketing Wallet (wallet2): 50%
-                > Holders (reflect): 20%
+                > Dev Wallet (wallet1): 10%
+                > Dev Wallet (wallet2): 10% 
+                > Marketing Wallet (wallet3): 50%
+                > Holders (reflect): 16%
         */
 
         /*
@@ -324,21 +328,23 @@ contract YeagerInu is Context, IERC20Metadata, Ownable {
             Total Tax Percentage per Transaction : 25%
             Tax Split:
                 > Burn (burnAddress): 4%
-                > Dev Wallet (wallet1): 40% 
-                > Marketing Wallet (wallet2): 40%
+                > Dev Wallet (wallet1): 20%
+                > Dev Wallet (wallet2): 20% 
+                > Marketing Wallet (wallet3): 40%
                 > Holders (reflect): 16%
 
             > Sell <
             Total Tax Percentage per Transaction : 10%
             Tax Split:
                 > Burn (burnAddress): 4%
-                > Dev Wallet (wallet1): 40% 
-                > Marketing Wallet (wallet2): 40%
+                > Dev Wallet (wallet1): 20%
+                > Dev Wallet (wallet2): 20% 
+                > Marketing Wallet (wallet3): 40%
                 > Holders (reflect): 16%
         */
 
-        _governingTaxes.push(governingTaxes(10, 4, 40, 40, 16, payable(wallet1_), payable(wallet2_)));
-        _governingTaxes.push(governingTaxes(25, 4, 40, 40, 16, payable(wallet1_), payable(wallet2_)));
+        _governingTaxes.push(governingTaxes(10, 4, 20, 20, 40, 16, payable(wallet1_), payable(wallet2_), payable(wallet3_)));
+        _governingTaxes.push(governingTaxes(25, 4, 20, 20, 40, 16, payable(wallet1_), payable(wallet2_), payable(wallet3_)));
         _localtax = _governingTaxes[1];
         //uniswapV2Router = IUniswapV2Router02(0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D);
         //uniswapV2Router = IUniswapV2Router02(0x10ED43C718714eb63d5aA57B78B54704E256024E);
@@ -356,6 +362,7 @@ contract YeagerInu is Context, IERC20Metadata, Ownable {
         excludeFromReward(burnAddress);
         excludeFromReward(wallet1_);
         excludeFromReward(wallet2_);
+        excludeFromReward(wallet3_);
         excludeFromReward(address(this));
 
         emit Transfer(address(0), _msgSender(), _tTotal);
@@ -437,6 +444,7 @@ contract YeagerInu is Context, IERC20Metadata, Ownable {
         uint32 burn_Split,
         uint32 governingSplit_Wallet1,
         uint32 governingSplit_Wallet2,
+        uint32 governingSplit_Wallet3,
         uint32 reflect_Split
     ) {
         return (
@@ -444,7 +452,8 @@ contract YeagerInu is Context, IERC20Metadata, Ownable {
             _governingTaxes[0]._split0,
             _governingTaxes[0]._split1,
             _governingTaxes[0]._split2,
-            _governingTaxes[0]._split3
+            _governingTaxes[0]._split3,
+            _governingTaxes[0]._split4
         );
     }
 
@@ -454,14 +463,16 @@ contract YeagerInu is Context, IERC20Metadata, Ownable {
         uint32 burn_Split,
         uint32 governingSplit_Wallet1,
         uint32 governingSplit_Wallet2,
+        uint32 governingSplit_Wallet3,
         uint32 reflect_Split
     ) {
         return (
-            _governingTaxes[1]._totalTaxPercent,
-            _governingTaxes[1]._split0,
-            _governingTaxes[1]._split1,
-            _governingTaxes[1]._split2,
-            _governingTaxes[1]._split3
+            _governingTaxes[0]._totalTaxPercent,
+            _governingTaxes[0]._split0,
+            _governingTaxes[0]._split1,
+            _governingTaxes[0]._split2,
+            _governingTaxes[0]._split3,
+            _governingTaxes[0]._split4
         );
     }
 
@@ -526,20 +537,24 @@ contract YeagerInu is Context, IERC20Metadata, Ownable {
         uint32 split0_, 
         uint32 split1_, 
         uint32 split2_, 
-        uint32 split3_, 
+        uint32 split3_,
+        uint32 split4_, 
         address wallet1_, 
-        address wallet2_
+        address wallet2_,
+        address wallet3_
     ) external onlyOwner() {
-        require(wallet1_ != address(0) && wallet2_ != address(0), "Tax Wallets assigned zero address !");
-        require(split0_+split1_+split2_+split3_ == 100, "Split Percentages does not sum upto 100 !");
+        require(wallet1_ != address(0) && wallet2_ != address(0) && wallet3_ != address(0), "Tax Wallets assigned zero address !");
+        require(split0_+split1_+split2_+split3_+split3_ == 100, "Split Percentages does not sum upto 100 !");
 
         _governingTaxes[type_]._totalTaxPercent = totalTaxPercent_;
         _governingTaxes[type_]._split0 = split0_;
         _governingTaxes[type_]._split1 = split1_;
         _governingTaxes[type_]._split2 = split2_;
         _governingTaxes[type_]._split3 = split3_;
+        _governingTaxes[type_]._split4 = split4_;
         _governingTaxes[type_]._wallet1 = payable(wallet1_);
         _governingTaxes[type_]._wallet2 = payable(wallet2_);
+        _governingTaxes[type_]._wallet3 = payable(wallet3_);
 
         if(type_ == 1) _localtax = _governingTaxes[type_];
     }
@@ -576,11 +591,13 @@ contract YeagerInu is Context, IERC20Metadata, Ownable {
 
     function sendETHToWallets(uint256 amount) private {
 
-        uint256 wsplit1 = (amount * _localtax._split2) / (_localtax._split2 + _localtax._split3);
-        uint256 wsplit2 = amount - wsplit1;
+        uint256 wsplit1 = (amount * _localtax._split1) / (_localtax._split1 + _localtax._split2 + _localtax._split3);
+        uint256 wsplit2 = (amount * _localtax._split2) / (_localtax._split1 + _localtax._split2 + _localtax._split3);
+        uint256 wsplit3 = amount - wsplit1 - wsplit2;
 
         _localtax._wallet1.transfer(wsplit1);
         _localtax._wallet2.transfer(wsplit2);
+        _localtax._wallet2.transfer(wsplit3);
     }
 
     function swapTokensForEth(uint256 tokenAmount) private lockTheSwap {
@@ -683,12 +700,13 @@ contract YeagerInu is Context, IERC20Metadata, Ownable {
 
                 if (swapEnabled && !inSwap) {
 
-                    _rOwned[address(this)] += (rFee._fee1+rFee._fee2);
-                    _tOwned[address(this)] += (tFee._fee1+tFee._fee2);
+                    _rOwned[address(this)] += (rFee._fee1+rFee._fee2+rFee._fee3);
+                    _tOwned[address(this)] += (tFee._fee1+tFee._fee2+rFee._fee3);
+                    _tOwned[address(this)] += (tFee._fee1+tFee._fee2+rFee._fee3);
 
-                    emit Transfer(sender, address(this), (tFee._fee1+tFee._fee2));
+                    emit Transfer(sender, address(this), (tFee._fee1+tFee._fee2+rFee._fee3));
 
-                    swapTokensForEth(tFee._fee1+tFee._fee2);
+                    swapTokensForEth(tFee._fee1+tFee._fee2+rFee._fee3);
                     uint256 contractETHBalance = address(this).balance;
                     if(contractETHBalance > 0) {
                         sendETHToWallets(contractETHBalance);
@@ -698,14 +716,17 @@ contract YeagerInu is Context, IERC20Metadata, Ownable {
                 else {
                     _rOwned[_localtax._wallet1] += rFee._fee1;
                     _rOwned[_localtax._wallet2] += rFee._fee2;
+                    _rOwned[_localtax._wallet3] += rFee._fee3;
                     if (_isExcluded[_localtax._wallet1])_tOwned[_localtax._wallet1] += tFee._fee1;
                     if (_isExcluded[_localtax._wallet2])_tOwned[_localtax._wallet2] += tFee._fee2;
+                    if (_isExcluded[_localtax._wallet3])_tOwned[_localtax._wallet3] += tFee._fee3;
 
                     emit Transfer(sender, _localtax._wallet1, tFee._fee1);
                     emit Transfer(sender, _localtax._wallet2, tFee._fee2);
+                    emit Transfer(sender, _localtax._wallet3, tFee._fee3);
                 }
 
-                _reflectFee(rFee._fee3, tFee._fee0+tFee._fee1+tFee._fee2+tFee._fee3);
+                _reflectFee(rFee._fee4, tFee._fee0+tFee._fee1+tFee._fee2+tFee._fee3+tFee._fee4);
 
                 emit Transfer(sender, burnAddress, tFee._fee0);
                 emit Transfer(sender, recipient, tTransferAmount);
@@ -742,7 +763,8 @@ contract YeagerInu is Context, IERC20Metadata, Ownable {
         tFee._fee1 = (tAmount * _localtax._totalTaxPercent * _localtax._split1) / 10**4;
         tFee._fee2 = (tAmount * _localtax._totalTaxPercent * _localtax._split2) / 10**4;
         tFee._fee3 = (tAmount * _localtax._totalTaxPercent * _localtax._split3) / 10**4;
-        uint256 tTransferAmount = tAmount - tFee._fee0 - tFee._fee1 - tFee._fee2 - tFee._fee3;
+        tFee._fee4 = (tAmount * _localtax._totalTaxPercent * _localtax._split4) / 10**4;
+        uint256 tTransferAmount = tAmount - tFee._fee0 - tFee._fee1 - tFee._fee2 - tFee._fee3 - tFee._fee4;
         return (tTransferAmount, tFee);
     }
 
@@ -753,7 +775,8 @@ contract YeagerInu is Context, IERC20Metadata, Ownable {
         rFee._fee1 = tFee._fee1 * currentRate;
         rFee._fee2 = tFee._fee2 * currentRate;
         rFee._fee3 = tFee._fee3 * currentRate;
-        uint256 rTransferAmount = rAmount - rFee._fee0 - rFee._fee1 - rFee._fee2 - rFee._fee3;
+        rFee._fee4 = tFee._fee4 * currentRate;
+        uint256 rTransferAmount = rAmount - rFee._fee0 - rFee._fee1 - rFee._fee2 - rFee._fee3 - rFee._fee4;
         return (rAmount, rTransferAmount, rFee);
     }
 
