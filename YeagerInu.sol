@@ -544,7 +544,7 @@ contract YeagerInu is Context, IERC20Metadata, Ownable {
         address wallet3_
     ) external onlyOwner() {
         require(wallet1_ != address(0) && wallet2_ != address(0) && wallet3_ != address(0), "Tax Wallets assigned zero address !");
-        require(split0_+split1_+split2_+split3_+split3_ == 100, "Split Percentages does not sum upto 100 !");
+        require(split0_+split1_+split2_+split3_+split4_ == 100, "Split Percentages does not sum upto 100 !");
 
         _governingTaxes[type_]._totalTaxPercent = totalTaxPercent_;
         _governingTaxes[type_]._split0 = split0_;
