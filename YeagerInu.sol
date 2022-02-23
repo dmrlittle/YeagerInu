@@ -467,12 +467,12 @@ contract YeagerInu is Context, IERC20Metadata, Ownable {
         uint32 reflect_Split
     ) {
         return (
-            _governingTaxes[0]._totalTaxPercent,
-            _governingTaxes[0]._split0,
-            _governingTaxes[0]._split1,
-            _governingTaxes[0]._split2,
-            _governingTaxes[0]._split3,
-            _governingTaxes[0]._split4
+            _governingTaxes[1]._totalTaxPercent,
+            _governingTaxes[1]._split0,
+            _governingTaxes[1]._split1,
+            _governingTaxes[1]._split2,
+            _governingTaxes[1]._split3,
+            _governingTaxes[1]._split4
         );
     }
 
