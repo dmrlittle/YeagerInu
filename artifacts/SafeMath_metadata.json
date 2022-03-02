@@ -18,7 +18,7 @@
 	},
 	"settings": {
 		"compilationTarget": {
-			"Testing/YeagerInu.sol": "Context"
+			"Testing/bunnyrocket.sol": "SafeMath"
 		},
 		"evmVersion": "london",
 		"libraries": {},
@@ -32,12 +32,12 @@
 		"remappings": []
 	},
 	"sources": {
-		"Testing/YeagerInu.sol": {
-			"keccak256": "0x26d47e14152c1d292bd8b72a19a87d705e73ae7d5e3fc35c5dd56a862b05b879",
+		"Testing/bunnyrocket.sol": {
+			"keccak256": "0x57f524c8191aa36d0363fee222107f2f4742a8cd62d59f5ce5dc3dbd3a8667a4",
 			"license": "Unlicensed",
 			"urls": [
-				"bzz-raw://988276cf394299c337b6777f9704a954d6b2b11199006a146a7741ca3854ce15",
-				"dweb:/ipfs/QmQatnv3dnpJerJsauaG8SHakJu9dCQGPXS2a5ddGHv9RC"
+				"bzz-raw://0545829b571cc857a474ecb0a23bd628884109b60031653b8b29c65e0d205298",
+				"dweb:/ipfs/QmX9TCohVZKH31AiG1i39mWugoNYf599yEje5gwcNz4vAY"
 			]
 		}
 	},

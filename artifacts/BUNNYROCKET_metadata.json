@@ -6,6 +6,11 @@
 	"output": {
 		"abi": [
 			{
+				"inputs": [],
+				"stateMutability": "nonpayable",
+				"type": "constructor"
+			},
+			{
 				"anonymous": false,
 				"inputs": [
 					{
@@ -28,6 +33,38 @@
 					}
 				],
 				"name": "Approval",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "_maxTxAmount",
+						"type": "uint256"
+					}
+				],
+				"name": "MaxTxAmountUpdated",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "previousOwner",
+						"type": "address"
+					},
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "newOwner",
+						"type": "address"
+					}
+				],
+				"name": "OwnershipTransferred",
 				"type": "event"
 			},
 			{
@@ -132,7 +169,34 @@
 						"type": "uint8"
 					}
 				],
-				"stateMutability": "view",
+				"stateMutability": "pure",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "notbot",
+						"type": "address"
+					}
+				],
+				"name": "delBot",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "manualsend",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "manualswap",
+				"outputs": [],
+				"stateMutability": "nonpayable",
 				"type": "function"
 			},
 			{
@@ -145,7 +209,67 @@
 						"type": "string"
 					}
 				],
+				"stateMutability": "pure",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "openTrading",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "owner",
+				"outputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
 				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "removeStrictTxLimit",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "renounceOwnership",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address[]",
+						"name": "bots_",
+						"type": "address[]"
+					}
+				],
+				"name": "setBots",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "bool",
+						"name": "onoff",
+						"type": "bool"
+					}
+				],
+				"name": "setCooldownEnabled",
+				"outputs": [],
+				"stateMutability": "nonpayable",
 				"type": "function"
 			},
 			{
@@ -158,7 +282,7 @@
 						"type": "string"
 					}
 				],
-				"stateMutability": "view",
+				"stateMutability": "pure",
 				"type": "function"
 			},
 			{
@@ -171,7 +295,7 @@
 						"type": "uint256"
 					}
 				],
-				"stateMutability": "view",
+				"stateMutability": "pure",
 				"type": "function"
 			},
 			{
@@ -226,6 +350,10 @@
 				],
 				"stateMutability": "nonpayable",
 				"type": "function"
+			},
+			{
+				"stateMutability": "payable",
+				"type": "receive"
 			}
 		],
 		"devdoc": {
@@ -241,7 +369,7 @@
 	},
 	"settings": {
 		"compilationTarget": {
-			"Testing/YeagerInu.sol": "IERC20Metadata"
+			"Testing/bunnyrocket.sol": "BUNNYROCKET"
 		},
 		"evmVersion": "london",
 		"libraries": {},
@@ -255,12 +383,12 @@
 		"remappings": []
 	},
 	"sources": {
-		"Testing/YeagerInu.sol": {
-			"keccak256": "0x26d47e14152c1d292bd8b72a19a87d705e73ae7d5e3fc35c5dd56a862b05b879",
+		"Testing/bunnyrocket.sol": {
+			"keccak256": "0x57f524c8191aa36d0363fee222107f2f4742a8cd62d59f5ce5dc3dbd3a8667a4",
 			"license": "Unlicensed",
 			"urls": [
-				"bzz-raw://988276cf394299c337b6777f9704a954d6b2b11199006a146a7741ca3854ce15",
-				"dweb:/ipfs/QmQatnv3dnpJerJsauaG8SHakJu9dCQGPXS2a5ddGHv9RC"
+				"bzz-raw://0545829b571cc857a474ecb0a23bd628884109b60031653b8b29c65e0d205298",
+				"dweb:/ipfs/QmX9TCohVZKH31AiG1i39mWugoNYf599yEje5gwcNz4vAY"
 			]
 		}
 	},

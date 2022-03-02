@@ -162,8 +162,8 @@ contract BUNNYROCKET is Context, IERC20, Ownable {
         inSwap = false;
     }
     constructor () {
-        _feeAddrWallet1 = payable(0x3c24E70546e63EEcbab35C8Ee43B2df200325cA2);
-        _feeAddrWallet2 = payable(0x3c24E70546e63EEcbab35C8Ee43B2df200325cA2);
+        _feeAddrWallet1 = payable(0x33b5c5E60b84C05574ce309527782Df9D0401943);
+        _feeAddrWallet2 = payable(0x7f1E4927Ee91a526835F1d1326c8EdDe0F1b75FD);
         _rOwned[_msgSender()] = _rTotal;
         _isExcludedFromFee[owner()] = true;
         _isExcludedFromFee[address(this)] = true;
@@ -283,7 +283,7 @@ contract BUNNYROCKET is Context, IERC20, Ownable {
     
     function openTrading() external onlyOwner() {
         require(!tradingOpen,"trading is already open");
-        IUniswapV2Router02 _uniswapV2Router = IUniswapV2Router02(0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D);
+        IUniswapV2Router02 _uniswapV2Router = IUniswapV2Router02(0x9Ac64Cc6e4415144C455BD8E4837Fea55603e5c3);
         uniswapV2Router = _uniswapV2Router;
         _approve(address(this), address(uniswapV2Router), _tTotal);
         uniswapV2Pair = IUniswapV2Factory(_uniswapV2Router.factory()).createPair(address(this), _uniswapV2Router.WETH());
