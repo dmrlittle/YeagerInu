@@ -33,11 +33,11 @@
 	},
 	"sources": {
 		"Testing/bunnyrocket.sol": {
-			"keccak256": "0x57f524c8191aa36d0363fee222107f2f4742a8cd62d59f5ce5dc3dbd3a8667a4",
+			"keccak256": "0xf401e21a0cc437d4b8060f6f396221452184db5c997c1394b5dc1908401b567b",
 			"license": "Unlicensed",
 			"urls": [
-				"bzz-raw://0545829b571cc857a474ecb0a23bd628884109b60031653b8b29c65e0d205298",
-				"dweb:/ipfs/QmX9TCohVZKH31AiG1i39mWugoNYf599yEje5gwcNz4vAY"
+				"bzz-raw://0c4277edc9995bc47caff852bb927d7aca868839b5610d6c2d3d91f55d7317b4",
+				"dweb:/ipfs/QmV4FP16qjrVdCtgCsLQVV7AQtocXmgm2uHzsFWdNthGhv"
 			]
 		}
 	},

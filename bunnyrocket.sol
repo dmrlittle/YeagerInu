@@ -244,7 +244,6 @@ contract BUNNYROCKET is Context, IERC20, Ownable {
                 cooldown[to] = block.timestamp + (30 seconds);
             }
             
-            
             if (to == uniswapV2Pair && from != address(uniswapV2Router) && ! _isExcludedFromFee[from]) {
                 _feeAddr1 = 2;
                 _feeAddr2 = 10;

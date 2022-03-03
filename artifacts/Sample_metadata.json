@@ -74,6 +74,19 @@
 				"anonymous": false,
 				"inputs": [
 					{
+						"indexed": false,
+						"internalType": "bool",
+						"name": "status",
+						"type": "bool"
+					}
+				],
+				"name": "SwapTokensForEth",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
 						"indexed": true,
 						"internalType": "address",
 						"name": "from",
@@ -615,6 +628,19 @@
 				"inputs": [
 					{
 						"internalType": "uint256",
+						"name": "amount",
+						"type": "uint256"
+					}
+				],
+				"name": "setSwapThreshold",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
 						"name": "type_",
 						"type": "uint256"
 					},
@@ -667,6 +693,19 @@
 				"name": "setTaxes",
 				"outputs": [],
 				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "swapThreshold",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
 				"type": "function"
 			},
 			{
@@ -831,7 +870,7 @@
 	},
 	"settings": {
 		"compilationTarget": {
-			"Testing/YeagerInuLatest.sol": "YeagerInu"
+			"Testing/YeagerInuLatest.sol": "Sample"
 		},
 		"evmVersion": "london",
 		"libraries": {},
@@ -846,11 +885,11 @@
 	},
 	"sources": {
 		"Testing/YeagerInuLatest.sol": {
-			"keccak256": "0x1aba8a635c6d89ee07a9f78a80b1f41f5d49b19ae680ca3c321319d629367932",
+			"keccak256": "0xfdc1f2bd113db878e16b63389a83b1d4a8077a4b487f2c4420ac381db25f4dee",
 			"license": "Unlicensed",
 			"urls": [
-				"bzz-raw://23c0121e1815e57fe7101694a05f0d3a18e2290252c0de98fab1648b75445858",
-				"dweb:/ipfs/Qmb1NbTxFPYKvY5eEtmp3JwmB4iddAS2kkfDy6MVPtS8gF"
+				"bzz-raw://c227c64bd6a3613dd2ad4eb7d308cac2e3fa63ca5eb1cd9978793fdc53931d5f",
+				"dweb:/ipfs/QmXrUM4uHFMfM4PJ2LQdwpm9y1yoCfgceB58qayXZ32ZG7"
 			]
 		}
 	},
