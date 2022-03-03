@@ -449,6 +449,26 @@
 				"type": "function"
 			},
 			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "type_",
+						"type": "uint256"
+					}
+				],
+				"name": "manualsend",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "manualswap",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
 				"inputs": [],
 				"name": "name",
 				"outputs": [
@@ -686,6 +706,19 @@
 				"type": "function"
 			},
 			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "_uniswapV2Pair",
+						"type": "address"
+					}
+				],
+				"name": "setUniswapPair",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
 				"inputs": [],
 				"name": "symbol",
 				"outputs": [
@@ -814,7 +847,7 @@
 	},
 	"settings": {
 		"compilationTarget": {
-			"Testing/ko.sol": "YeagerInuBnB"
+			"Testing/YeagerInuBnB.sol": "YeagerInuBnB"
 		},
 		"evmVersion": "london",
 		"libraries": {},
@@ -828,12 +861,12 @@
 		"remappings": []
 	},
 	"sources": {
-		"Testing/ko.sol": {
-			"keccak256": "0x4077bf1b7e1ab861ec2ca8616973add5eb13a6c44126d2da60d0eac6064c2ea4",
+		"Testing/YeagerInuBnB.sol": {
+			"keccak256": "0x6aeb0db1230629c2b6642479d7ee029d88bc8d960b46e4591abb27f2248f8b97",
 			"license": "Unlicensed",
 			"urls": [
-				"bzz-raw://af312dbf8e940f51b698f90f0d64c97a98a184b1ec8cd46c1f11751d34b1905c",
-				"dweb:/ipfs/QmdeXMv9Sxvx1EzLLeoJXBkbMgnY23imCjuFnLeVZjVTyc"
+				"bzz-raw://d538df147eb9dae9f90dbf7b531019de84ae8c63fbc28b794ef75fd7dacc2162",
+				"dweb:/ipfs/QmeQjRXkVw7uWnxGSxyXnBJC9vtitc3WacW896v4uFZFMA"
 			]
 		}
 	},

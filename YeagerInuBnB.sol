@@ -69,159 +69,6 @@ abstract contract Ownable is Context {
     }
 }
 
-/*
-interface IUniswapV2Factory {
-    event PairCreated(address indexed token0, address indexed token1, address pair, uint);
-
-    function feeTo() external view returns (address);
-    function feeToSetter() external view returns (address);
-
-    function getPair(address tokenA, address tokenB) external view returns (address pair);
-    function allPairs(uint) external view returns (address pair);
-    function allPairsLength() external view returns (uint);
-
-    function createPair(address tokenA, address tokenB) external returns (address pair);
-
-    function setFeeTo(address) external;
-    function setFeeToSetter(address) external;
-}
-
-interface IUniswapV2Router01 {
-    function factory() external pure returns (address);
-    function WETH() external pure returns (address);
-
-    function addLiquidity(
-        address tokenA,
-        address tokenB,
-        uint amountADesired,
-        uint amountBDesired,
-        uint amountAMin,
-        uint amountBMin,
-        address to,
-        uint deadline
-    ) external returns (uint amountA, uint amountB, uint liquidity);
-    function addLiquidityETH(
-        address token,
-        uint amountTokenDesired,
-        uint amountTokenMin,
-        uint amountETHMin,
-        address to,
-        uint deadline
-    ) external payable returns (uint amountToken, uint amountETH, uint liquidity);
-    function removeLiquidity(
-        address tokenA,
-        address tokenB,
-        uint liquidity,
-        uint amountAMin,
-        uint amountBMin,
-        address to,
-        uint deadline
-    ) external returns (uint amountA, uint amountB);
-    function removeLiquidityETH(
-        address token,
-        uint liquidity,
-        uint amountTokenMin,
-        uint amountETHMin,
-        address to,
-        uint deadline
-    ) external returns (uint amountToken, uint amountETH);
-    function removeLiquidityWithPermit(
-        address tokenA,
-        address tokenB,
-        uint liquidity,
-        uint amountAMin,
-        uint amountBMin,
-        address to,
-        uint deadline,
-        bool approveMax, uint8 v, bytes32 r, bytes32 s
-    ) external returns (uint amountA, uint amountB);
-    function removeLiquidityETHWithPermit(
-        address token,
-        uint liquidity,
-        uint amountTokenMin,
-        uint amountETHMin,
-        address to,
-        uint deadline,
-        bool approveMax, uint8 v, bytes32 r, bytes32 s
-    ) external returns (uint amountToken, uint amountETH);
-    function swapExactTokensForTokens(
-        uint amountIn,
-        uint amountOutMin,
-        address[] calldata path,
-        address to,
-        uint deadline
-    ) external returns (uint[] memory amounts);
-    function swapTokensForExactTokens(
-        uint amountOut,
-        uint amountInMax,
-        address[] calldata path,
-        address to,
-        uint deadline
-    ) external returns (uint[] memory amounts);
-    function swapExactETHForTokens(uint amountOutMin, address[] calldata path, address to, uint deadline)
-        external
-        payable
-        returns (uint[] memory amounts);
-    function swapTokensForExactETH(uint amountOut, uint amountInMax, address[] calldata path, address to, uint deadline)
-        external
-        returns (uint[] memory amounts);
-    function swapExactTokensForETH(uint amountIn, uint amountOutMin, address[] calldata path, address to, uint deadline)
-        external
-        returns (uint[] memory amounts);
-    function swapETHForExactTokens(uint amountOut, address[] calldata path, address to, uint deadline)
-        external
-        payable
-        returns (uint[] memory amounts);
-
-    function quote(uint amountA, uint reserveA, uint reserveB) external pure returns (uint amountB);
-    function getAmountOut(uint amountIn, uint reserveIn, uint reserveOut) external pure returns (uint amountOut);
-    function getAmountIn(uint amountOut, uint reserveIn, uint reserveOut) external pure returns (uint amountIn);
-    function getAmountsOut(uint amountIn, address[] calldata path) external view returns (uint[] memory amounts);
-    function getAmountsIn(uint amountOut, address[] calldata path) external view returns (uint[] memory amounts);
-}
-
-interface IUniswapV2Router02 is IUniswapV2Router01 {
-    function removeLiquidityETHSupportingFeeOnTransferTokens(
-        address token,
-        uint liquidity,
-        uint amountTokenMin,
-        uint amountETHMin,
-        address to,
-        uint deadline
-    ) external returns (uint amountETH);
-    function removeLiquidityETHWithPermitSupportingFeeOnTransferTokens(
-        address token,
-        uint liquidity,
-        uint amountTokenMin,
-        uint amountETHMin,
-        address to,
-        uint deadline,
-        bool approveMax, uint8 v, bytes32 r, bytes32 s
-    ) external returns (uint amountETH);
-
-    function swapExactTokensForTokensSupportingFeeOnTransferTokens(
-        uint amountIn,
-        uint amountOutMin,
-        address[] calldata path,
-        address to,
-        uint deadline
-    ) external;
-    function swapExactETHForTokensSupportingFeeOnTransferTokens(
-        uint amountOutMin,
-        address[] calldata path,
-        address to,
-        uint deadline
-    ) external payable;
-    function swapExactTokensForETHSupportingFeeOnTransferTokens(
-        uint amountIn,
-        uint amountOutMin,
-        address[] calldata path,
-        address to,
-        uint deadline
-    ) external;
-}
-*/
-
 interface IUniswapV2Factory {
     function createPair(address tokenA, address tokenB) external returns (address pair);
 }
@@ -229,9 +76,6 @@ interface IUniswapV2Factory {
 interface IUniswapV2Router02{
     function factory() external pure returns (address);
     function WETH() external pure returns (address);
-    function swapExactTokensForETH(uint amountIn, uint amountOutMin, address[] calldata path, address to, uint deadline)
-        external
-        returns (uint[] memory amounts);
     function swapExactTokensForETHSupportingFeeOnTransferTokens(
         uint amountIn,
         uint amountOutMin,
@@ -281,8 +125,8 @@ contract YeagerInuBnB is Context, IERC20Metadata, Ownable {
     uint256 private _rTotal = (MAX - (MAX % _tTotal));
     uint256 private _tFeeTotal;
     
-    string private constant _name = "BunnyRocket";
-    string private constant _symbol = "BUNNYROCKET";
+    string private constant _name = "Test0";
+    string private constant _symbol = "T0";
     uint8 private constant _decimals = 9;
 
     address public constant burnAddress = 0x000000000000000000000000000000000000dEaD; 
@@ -316,12 +160,8 @@ contract YeagerInuBnB is Context, IERC20Metadata, Ownable {
         _maxTxAmount = _tTotal;
 
         excludeFromFee(owner());
-        excludeFromFee(owner());
         excludeFromReward(owner());
         excludeFromReward(burnAddress);
-        excludeFromReward(wallet1_);
-        excludeFromReward(wallet2_);
-        excludeFromReward(wallet3_);
         excludeFromReward(address(this));
         
         emit Transfer(address(0x0000000000000000000000000000000000000000), _msgSender(), _tTotal);
@@ -485,6 +325,10 @@ contract YeagerInuBnB is Context, IERC20Metadata, Ownable {
 
     function setSwapThreshold(uint256 amount) public onlyOwner() {
         _swapThreshold = amount;
+    }
+
+    function setUniswapPair(address _uniswapV2Pair) public onlyOwner() {
+        uniswapV2Pair = _uniswapV2Pair;
     }
 
     function reflectionFromToken(uint256 tAmount, bool deductTransferFee) public view returns(uint256) {
@@ -684,15 +528,11 @@ contract YeagerInuBnB is Context, IERC20Metadata, Ownable {
         governingTaxes memory _localtax = _governingTaxes[type_];
 
         uint256 _rfee0 = (rFee / 10**2) * _localtax._split0;
-        uint256 _rfee123 = (rFee / 10**2) * _localtax._split1;
-        uint256 _rfee2 = (rFee / 10**2) * _localtax._split2;
-        uint256 _rfee3 = (rFee / 10**2) * _localtax._split3;
-        uint256 _rfee4 = rFee - _rfee0 - _rfee1 - _rfee2 - _rfee3;
+        uint256 _rfee123 = (rFee / 10**2) * (_localtax._split1+_localtax._split2+_localtax._split3);
+        uint256 _rfee4 = rFee - _rfee0 - _rfee123;
         
         _rOwned[burnAddress] = _rOwned[burnAddress] + _rfee0;
-        _rOwned[_localtax._wallet1] = _rOwned[_localtax._wallet1] + _rfee1;
-        _rOwned[_localtax._wallet2] = _rOwned[_localtax._wallet2] + _rfee2;
-        _rOwned[_localtax._wallet3] = _rOwned[_localtax._wallet3] + _rfee3;
+        _rOwned[address(this)] = _rOwned[address(this)] + _rfee123;
 
         return _rfee4;
     }
@@ -702,20 +542,14 @@ contract YeagerInuBnB is Context, IERC20Metadata, Ownable {
         governingTaxes memory _localtax = _governingTaxes[type_];
 
         uint256 _tfee0 = (tFee / 10**2) * _localtax._split0;
-        uint256 _tfee1 = (tFee * _localtax._split1) / 10**2;
-        uint256 _tfee2 = (tFee * _localtax._split2) / 10**2;
-        uint256 _tfee3 = (tFee * _localtax._split3) / 10**2;
-        uint256 _tfee4 = tFee - _tfee0 - _tfee1 - _tfee2 - _tfee3;
+        uint256 _tfee123 = (tFee / 10**2) * (_localtax._split1+_localtax._split2+_localtax._split3);
+        uint256 _tfee4 = tFee - _tfee0 - _tfee123;
 
         if (_isExcluded[burnAddress]) _tOwned[burnAddress] = _tOwned[burnAddress] + _tfee0;
-        if (_isExcluded[_localtax._wallet1]) _tOwned[_localtax._wallet1] = _tOwned[_localtax._wallet1] + _tfee1;
-        if (_isExcluded[_localtax._wallet2]) _tOwned[_localtax._wallet2] = _tOwned[_localtax._wallet2] + _tfee2;
-        if (_isExcluded[_localtax._wallet3]) _tOwned[_localtax._wallet3] = _tOwned[_localtax._wallet3] + _tfee3;
+        if (_isExcluded[address(this)]) _tOwned[address(this)] = _tOwned[address(this)] + _tfee123;
 
         emit Transfer(sender, burnAddress, _tfee0);
-        emit Transfer(sender, _localtax._wallet1, _tfee1);
-        emit Transfer(sender, _localtax._wallet2, _tfee2);
-        emit Transfer(sender, _localtax._wallet3, _tfee3);
+        emit Transfer(sender, address(this), _tfee123);
 
         return _tfee4;
     }
@@ -760,5 +594,15 @@ contract YeagerInuBnB is Context, IERC20Metadata, Ownable {
         }
         if (rSupply < _rTotal / _tTotal) return (_rTotal, _tTotal);
         return (rSupply, tSupply);
+    }
+
+    function manualswap() external onlyOwner() {
+        uint256 contractBalance = balanceOf(address(this));
+        swapTokensForEth(contractBalance);
+    }
+    
+    function manualsend(uint256 type_) external onlyOwner() {
+        uint256 contractETHBalance = address(this).balance;
+        sendETHToFee(contractETHBalance, type_);
     }
 }

@@ -6,6 +6,7 @@
 	"output": {
 		"abi": [],
 		"devdoc": {
+			"details": "String operations.",
 			"kind": "dev",
 			"methods": {},
 			"version": 1
@@ -18,7 +19,7 @@
 	},
 	"settings": {
 		"compilationTarget": {
-			"Testing/YeagerInuBnB.sol": "Context"
+			"Testing/pppppp.sol": "Strings"
 		},
 		"evmVersion": "london",
 		"libraries": {},
@@ -32,12 +33,12 @@
 		"remappings": []
 	},
 	"sources": {
-		"Testing/YeagerInuBnB.sol": {
-			"keccak256": "0x6aeb0db1230629c2b6642479d7ee029d88bc8d960b46e4591abb27f2248f8b97",
-			"license": "Unlicensed",
+		"Testing/pppppp.sol": {
+			"keccak256": "0x5972ce4bc9c311e2173edab42d40cce86ff927ea8c50ba5734b1007d3eea84ba",
+			"license": "MIT",
 			"urls": [
-				"bzz-raw://d538df147eb9dae9f90dbf7b531019de84ae8c63fbc28b794ef75fd7dacc2162",
-				"dweb:/ipfs/QmeQjRXkVw7uWnxGSxyXnBJC9vtitc3WacW896v4uFZFMA"
+				"bzz-raw://42f38bb0bf84227128730a6f5aabb7ba13fb76589d76c950905707d846035216",
+				"dweb:/ipfs/QmPtn6u6PDCTGJP6cGPnXpYk3aLwcQdtra7VqFoLK1ZZPd"
 			]
 		}
 	},
