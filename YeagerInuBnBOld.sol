@@ -104,6 +104,7 @@ contract YeagerInuBnB is Context, IERC20Metadata, Ownable {
         uint32 _split4;
         address payable _wallet1;
         address payable _wallet2;
+        address payable _wallet3;
     }
 
     governingTaxes[] private _governingTaxes;
@@ -143,7 +144,6 @@ contract YeagerInuBnB is Context, IERC20Metadata, Ownable {
 
     event MaxTxAmountUpdated(uint _maxTxAmount);
     event SwapTokensForEth(bool status);
-    event AddLiquidity(bool status);
 
     modifier lockTheSwap {
         inSwap = true;
@@ -151,48 +151,15 @@ contract YeagerInuBnB is Context, IERC20Metadata, Ownable {
         inSwap = false;
     }
 
-    constructor (address wallet1_,  address wallet2_) {
-        
-        /*
-            Total Tax Percentage per Transaction : 13%
-            Tax Split (total 100%):
-                > Burn (burnAddress): 0%
-                > Dev Wallet (wallet1): 15%
-                > Marketing Wallet (wallet2): 45% 
-                > Auto Liquidity: 23%
-                > Holders (reflect): 17%
-        */
+    constructor (address wallet1_,  address wallet2_,  address wallet3_) {
 
-        /*
-            >>> First 24 hour Tax <<<
-
-            > Buy <
-            Total Tax Percentage per Transaction : 13%
-            Tax Split (total 100%):
-                > Burn (burnAddress): 0%
-                > Dev Wallet (wallet1): 15%
-                > Marketing Wallet (wallet2): 45% 
-                > Auto Liquidity: 23%
-                > Holders (reflect): 17%
-
-            > Sell <
-            Total Tax Percentage per Transaction : 25%
-            Tax Split (total 100%):
-                > Burn (burnAddress): 0%
-                > Dev Wallet (wallet1): 15%
-                > Marketing Wallet (wallet2): 45% 
-                > Auto Liquidity: 23%
-                > Holders (reflect): 17%
-        */
-
-        _governingTaxes.push(governingTaxes(13, 0, 15, 45, 23, 17, payable(wallet1_), payable(wallet2_)));
-        _governingTaxes.push(governingTaxes(25, 0, 15, 45, 23, 17, payable(wallet1_), payable(wallet2_)));
+        _governingTaxes.push(governingTaxes(10, 4, 20, 20, 40, 16, payable(wallet1_), payable(wallet2_), payable(wallet3_)));
+        _governingTaxes.push(governingTaxes(25, 4, 20, 20, 40, 16, payable(wallet1_), payable(wallet2_), payable(wallet3_)));
 
         _rOwned[_msgSender()] = _rTotal;
         _maxTxAmount = _tTotal;
 
         excludeFromFee(owner());
-        excludeFromFee(address(this));
         excludeFromReward(owner());
         excludeFromReward(burnAddress);
         excludeFromReward(address(this));
@@ -272,7 +239,7 @@ contract YeagerInuBnB is Context, IERC20Metadata, Ownable {
         uint32 burn_Split,
         uint32 governingSplit_Wallet1,
         uint32 governingSplit_Wallet2,
-        uint32 autoliquidity_Split,
+        uint32 governingSplit_Wallet3,
         uint32 reflect_Split
     ) {
         return (
@@ -291,7 +258,7 @@ contract YeagerInuBnB is Context, IERC20Metadata, Ownable {
         uint32 burn_Split,
         uint32 governingSplit_Wallet1,
         uint32 governingSplit_Wallet2,
-        uint32 autoliquidity_Split,
+        uint32 governingSplit_Wallet3,
         uint32 reflect_Split
     ) {
         return (
@@ -325,9 +292,10 @@ contract YeagerInuBnB is Context, IERC20Metadata, Ownable {
         uint32 split3_,
         uint32 split4_, 
         address wallet1_, 
-        address wallet2_
+        address wallet2_,
+        address wallet3_
     ) external onlyOwner() {
-        require(wallet1_ != address(0) && wallet2_ != address(0), "Tax Wallets assigned zero address !");
+        require(wallet1_ != address(0) && wallet2_ != address(0) && wallet3_ != address(0), "Tax Wallets assigned zero address !");
         require(split0_+split1_+split2_+split3_+split4_ == 100, "Split Percentages does not sum upto 100 !");
 
         _governingTaxes[type_]._totalTaxPercent = totalTaxPercent_;
@@ -338,6 +306,7 @@ contract YeagerInuBnB is Context, IERC20Metadata, Ownable {
         _governingTaxes[type_]._split4 = split4_;
         _governingTaxes[type_]._wallet1 = payable(wallet1_);
         _governingTaxes[type_]._wallet2 = payable(wallet2_);
+        _governingTaxes[type_]._wallet3 = payable(wallet3_);
     }
 
     function setBlacklistAccount(address account, bool enabled) external onlyOwner() {
@@ -418,29 +387,13 @@ contract YeagerInuBnB is Context, IERC20Metadata, Ownable {
             }
 
             if (!inSwap && from != uniswapV2Pair && swapEnabled) {
-                governingTaxes memory _localtax = _governingTaxes[type_];
-
                 uint256 contractTokenBalance = balanceOf(address(this));
-
-                if (contractTokenBalance > _swapThreshold) {
-                    uint256 swapTokenBalance = (contractTokenBalance / (_localtax._split1 + _localtax._split2 + _localtax._split3)) * (_localtax._split1 + _localtax._split2);
-                    uint256 liquidityTokenBalance = contractTokenBalance - swapTokenBalance;
-
-                    if(swapTokenBalance > 0) {
-                        swapTokensForEth(swapTokenBalance);
-                    }
-
-                    uint256 contractETHBalance = address(this).balance;
-                    uint256 walletETHBalance = (contractETHBalance / (_localtax._split1 + _localtax._split2 + _localtax._split3)) * (_localtax._split1 + _localtax._split2);
-                    uint256 liquidityETHBalance = contractETHBalance - walletETHBalance;
-
-                    if(walletETHBalance > 0) {
-                        sendETHToFee(walletETHBalance, type_);
-                    }
-
-                    if(liquidityTokenBalance > 0 && liquidityETHBalance > 0) {
-                        addLiquidityLocal(liquidityTokenBalance, liquidityETHBalance);
-                    }
+                if(contractTokenBalance > _swapThreshold) {
+                    swapTokensForEth(contractTokenBalance);
+                }
+                uint256 contractETHBalance = address(this).balance;
+                if(contractETHBalance > 0) {
+                    sendETHToFee(address(this).balance, type_);
                 }
             }
         }
@@ -508,31 +461,13 @@ contract YeagerInuBnB is Context, IERC20Metadata, Ownable {
 
         governingTaxes memory _localtax = _governingTaxes[type_];
 
-        uint256 wsplit1 = (amount * _localtax._split1) / (_localtax._split1 + _localtax._split2);
-        uint256 wsplit2 = amount - wsplit1;
+        uint256 wsplit1 = (amount * _localtax._split1) / (_localtax._split1 + _localtax._split2 + _localtax._split3);
+        uint256 wsplit2 = (amount * _localtax._split2) / (_localtax._split1 + _localtax._split2 + _localtax._split3);
+        uint256 wsplit3 = amount - wsplit1 - wsplit2;
 
         _localtax._wallet1.transfer(wsplit1);
         _localtax._wallet2.transfer(wsplit2);
-    }
-
-    function addLiquidityLocal(uint256 tokenAmount, uint256 ethAmount) private {
-        if (allowance(address(this), address(uniswapV2Router)) <= tokenAmount) {
-            _approve(address(this), address(uniswapV2Router), ~uint256(0));
-        }
-
-        // add the liquidity
-        try uniswapV2Router.addLiquidityETH{value: ethAmount}(
-            address(this),
-            tokenAmount,
-            0, // slippage is unavoidable
-            0, // slippage is unavoidable
-            owner(),
-            block.timestamp
-        ) {
-            emit AddLiquidity(true);
-        } catch Error(string memory /*reason*/) {
-            emit AddLiquidity(false);
-        }
+        _localtax._wallet3.transfer(wsplit3);
     }
     
     function openTrading() external onlyOwner() {
@@ -583,6 +518,9 @@ contract YeagerInuBnB is Context, IERC20Metadata, Ownable {
 
             emit Transfer(sender, recipient, tAmount);
         }
+
+        
+        
     }
 
     function _rsplitTax(uint256 rFee, uint256 type_) private returns (uint256) {

@@ -132,7 +132,7 @@
 	},
 	"settings": {
 		"compilationTarget": {
-			"Testing/YeagerInuBnB.sol": "IUniswapV2Router02"
+			"Testing/YeagerInuBnBOld.sol": "IUniswapV2Router02"
 		},
 		"evmVersion": "london",
 		"libraries": {},
@@ -146,7 +146,7 @@
 		"remappings": []
 	},
 	"sources": {
-		"Testing/YeagerInuBnB.sol": {
+		"Testing/YeagerInuBnBOld.sol": {
 			"keccak256": "0x6aeb0db1230629c2b6642479d7ee029d88bc8d960b46e4591abb27f2248f8b97",
 			"license": "Unlicensed",
 			"urls": [
