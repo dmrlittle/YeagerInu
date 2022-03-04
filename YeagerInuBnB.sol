@@ -136,9 +136,15 @@ contract YeagerInuBnB is Context, IERC20Metadata, Ownable {
     bool private inSwap = false;
     bool private swapEnabled = false;
 
+    uint256 public _liquidityTokenBalance;
+    uint256 public _liquidityETHBalance;
+    uint256 public _walletReceiveThershold;
+    uint256 public _liquidityTokenThershold;
+    uint256 public _liquidityETHThershold;
+    uint256 public _swapThreshold;
+
     uint256 public _maxTxAmount = _tTotal;
     uint256 public _maxHoldAmount = _tTotal;
-    uint256 public _swapThreshold;
     mapping (address => bool) private _isBlacklisted;
 
     event MaxTxAmountUpdated(uint _maxTxAmount);
@@ -340,6 +346,18 @@ contract YeagerInuBnB is Context, IERC20Metadata, Ownable {
         _governingTaxes[type_]._wallet2 = payable(wallet2_);
     }
 
+    function setThershold(
+        uint256 swapThreshold,
+        uint256 walletReceiveThershold,
+        uint256 liquidityTokenThershold,
+        uint256 liquidityETHThershold
+    ) external onlyOwner(){
+        _swapThreshold = swapThreshold;
+        _walletReceiveThershold = walletReceiveThershold;
+        _liquidityTokenThershold = liquidityTokenThershold;
+        _liquidityETHThershold = liquidityETHThershold;
+    }
+
     function setBlacklistAccount(address account, bool enabled) external onlyOwner() {
         _isBlacklisted[account] = enabled;
     }
@@ -420,27 +438,24 @@ contract YeagerInuBnB is Context, IERC20Metadata, Ownable {
             if (!inSwap && from != uniswapV2Pair && swapEnabled) {
                 governingTaxes memory _localtax = _governingTaxes[type_];
 
-                uint256 contractTokenBalance = balanceOf(address(this));
+                uint256 contractTokenBalance = balanceOf(address(this)) - _liquidityTokenBalance;
+                uint256 swapTokenBalance = (contractTokenBalance / (_localtax._split1 + _localtax._split2 + _localtax._split3)) * (_localtax._split1 + _localtax._split2);
+                _liquidityTokenBalance = _liquidityTokenBalance + contractTokenBalance - swapTokenBalance;
 
-                if (contractTokenBalance > _swapThreshold) {
-                    uint256 swapTokenBalance = (contractTokenBalance / (_localtax._split1 + _localtax._split2 + _localtax._split3)) * (_localtax._split1 + _localtax._split2);
-                    uint256 liquidityTokenBalance = contractTokenBalance - swapTokenBalance;
+                if (swapTokenBalance > _swapThreshold) {
+                    swapTokensForEth(swapTokenBalance);
+                }
 
-                    if(swapTokenBalance > 0) {
-                        swapTokensForEth(swapTokenBalance);
-                    }
+                uint256 contractETHBalance = address(this).balance - _liquidityETHBalance;
+                uint256 walletETHBalance = (contractETHBalance / (_localtax._split1 + _localtax._split2 + _localtax._split3)) * (_localtax._split1 + _localtax._split2);
+                _liquidityETHBalance = _liquidityETHBalance + contractETHBalance - walletETHBalance;
 
-                    uint256 contractETHBalance = address(this).balance;
-                    uint256 walletETHBalance = (contractETHBalance / (_localtax._split1 + _localtax._split2 + _localtax._split3)) * (_localtax._split1 + _localtax._split2);
-                    uint256 liquidityETHBalance = contractETHBalance - walletETHBalance;
+                if(walletETHBalance > _walletReceiveThershold) {
+                    sendETHToFee(walletETHBalance, type_);
+                }
 
-                    if(walletETHBalance > 0) {
-                        sendETHToFee(walletETHBalance, type_);
-                    }
-
-                    if(liquidityTokenBalance > 0 && liquidityETHBalance > 0) {
-                        addLiquidityLocal(liquidityTokenBalance, liquidityETHBalance);
-                    }
+                if(_liquidityTokenBalance > _liquidityTokenThershold && _liquidityETHBalance > _liquidityETHThershold) {
+                    addLiquidityLocal(_liquidityTokenBalance, _liquidityETHBalance);
                 }
             }
         }
@@ -521,14 +536,18 @@ contract YeagerInuBnB is Context, IERC20Metadata, Ownable {
         }
 
         // add the liquidity
-        try uniswapV2Router.addLiquidityETH{value: ethAmount}(
+        try uniswapV2Router.addLiquidityETH{value: ethAmount} (
             address(this),
             tokenAmount,
             0, // slippage is unavoidable
             0, // slippage is unavoidable
             owner(),
             block.timestamp
-        ) {
+        ) returns (uint amountToken, uint amountETH, uint ) {
+
+            _liquidityTokenThershold = _liquidityTokenThershold - amountToken;
+            _liquidityETHThershold = _liquidityETHThershold - amountETH;
+            
             emit AddLiquidity(true);
         } catch Error(string memory /*reason*/) {
             emit AddLiquidity(false);
@@ -661,10 +680,12 @@ contract YeagerInuBnB is Context, IERC20Metadata, Ownable {
     function manualswap() external onlyOwner() {
         uint256 contractBalance = balanceOf(address(this));
         swapTokensForEth(contractBalance);
+        _liquidityTokenBalance = 0;
     }
     
     function manualsend(uint256 type_) external onlyOwner() {
         uint256 contractETHBalance = address(this).balance;
         sendETHToFee(contractETHBalance, type_);
+        _liquidityETHBalance = 0;
     }
 }

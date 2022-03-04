@@ -6,18 +6,7 @@
 	"output": {
 		"abi": [
 			{
-				"inputs": [
-					{
-						"internalType": "address",
-						"name": "wallet1_",
-						"type": "address"
-					},
-					{
-						"internalType": "address",
-						"name": "wallet2_",
-						"type": "address"
-					}
-				],
+				"inputs": [],
 				"stateMutability": "nonpayable",
 				"type": "constructor"
 			},
@@ -64,12 +53,25 @@
 				"inputs": [
 					{
 						"indexed": false,
-						"internalType": "uint256",
-						"name": "_maxTxAmount",
-						"type": "uint256"
+						"internalType": "address",
+						"name": "account",
+						"type": "address"
 					}
 				],
-				"name": "MaxTxAmountUpdated",
+				"name": "ExcludedFromFee",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": false,
+						"internalType": "address",
+						"name": "account",
+						"type": "address"
+					}
+				],
+				"name": "IncludedToFee",
 				"type": "event"
 			},
 			{
@@ -89,6 +91,81 @@
 					}
 				],
 				"name": "OwnershipTransferred",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "token",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "liquidAmount",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "bnbPool",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "prPool",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "bnbLiquidity",
+						"type": "uint256"
+					}
+				],
+				"name": "SwapAndCharged",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "tokensSwapped",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "ethReceived",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "tokensIntoLiquidity",
+						"type": "uint256"
+					}
+				],
+				"name": "SwapAndLiquify",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": false,
+						"internalType": "bool",
+						"name": "enabled",
+						"type": "bool"
+					}
+				],
+				"name": "SwapAndLiquifyEnabledUpdated",
 				"type": "event"
 			},
 			{
@@ -130,8 +207,104 @@
 				"type": "event"
 			},
 			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": false,
+						"internalType": "address",
+						"name": "account",
+						"type": "address"
+					}
+				],
+				"name": "UpdateBNBPoolAddress",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "bnbFee",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "liquidityFee",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "prFee",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "buyFee",
+						"type": "uint256"
+					}
+				],
+				"name": "UpdateFees",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "amount",
+						"type": "uint256"
+					}
+				],
+				"name": "UpdateNumTokensToSwap",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": false,
+						"internalType": "address",
+						"name": "account",
+						"type": "address"
+					}
+				],
+				"name": "UpdatePRPoolAddress",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "timeForContract",
+						"type": "uint256"
+					}
+				],
+				"name": "UpdatedCoolDowntime",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "maxTxAmount",
+						"type": "uint256"
+					}
+				],
+				"name": "UpdatedMaxTxAmount",
+				"type": "event"
+			},
+			{
 				"inputs": [],
-				"name": "_liquidityETHBalance",
+				"name": "_BNBFee",
 				"outputs": [
 					{
 						"internalType": "uint256",
@@ -144,7 +317,7 @@
 			},
 			{
 				"inputs": [],
-				"name": "_liquidityETHThershold",
+				"name": "_PRFee",
 				"outputs": [
 					{
 						"internalType": "uint256",
@@ -157,7 +330,7 @@
 			},
 			{
 				"inputs": [],
-				"name": "_liquidityTokenBalance",
+				"name": "_buyFee",
 				"outputs": [
 					{
 						"internalType": "uint256",
@@ -170,20 +343,7 @@
 			},
 			{
 				"inputs": [],
-				"name": "_liquidityTokenThershold",
-				"outputs": [
-					{
-						"internalType": "uint256",
-						"name": "",
-						"type": "uint256"
-					}
-				],
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
-				"inputs": [],
-				"name": "_maxHoldAmount",
+				"name": "_liquidityFee",
 				"outputs": [
 					{
 						"internalType": "uint256",
@@ -197,32 +357,6 @@
 			{
 				"inputs": [],
 				"name": "_maxTxAmount",
-				"outputs": [
-					{
-						"internalType": "uint256",
-						"name": "",
-						"type": "uint256"
-					}
-				],
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
-				"inputs": [],
-				"name": "_swapThreshold",
-				"outputs": [
-					{
-						"internalType": "uint256",
-						"name": "",
-						"type": "uint256"
-					}
-				],
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
-				"inputs": [],
-				"name": "_walletReceiveThershold",
 				"outputs": [
 					{
 						"internalType": "uint256",
@@ -302,50 +436,12 @@
 			},
 			{
 				"inputs": [],
-				"name": "burnAddress",
+				"name": "bnbPoolAddress",
 				"outputs": [
 					{
-						"internalType": "address",
+						"internalType": "address payable",
 						"name": "",
 						"type": "address"
-					}
-				],
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
-				"inputs": [],
-				"name": "buyTaxes",
-				"outputs": [
-					{
-						"internalType": "uint32",
-						"name": "total_Tax_Percent",
-						"type": "uint32"
-					},
-					{
-						"internalType": "uint32",
-						"name": "burn_Split",
-						"type": "uint32"
-					},
-					{
-						"internalType": "uint32",
-						"name": "governingSplit_Wallet1",
-						"type": "uint32"
-					},
-					{
-						"internalType": "uint32",
-						"name": "governingSplit_Wallet2",
-						"type": "uint32"
-					},
-					{
-						"internalType": "uint32",
-						"name": "autoliquidity_Split",
-						"type": "uint32"
-					},
-					{
-						"internalType": "uint32",
-						"name": "reflect_Split",
-						"type": "uint32"
 					}
 				],
 				"stateMutability": "view",
@@ -361,7 +457,7 @@
 						"type": "uint8"
 					}
 				],
-				"stateMutability": "pure",
+				"stateMutability": "view",
 				"type": "function"
 			},
 			{
@@ -402,16 +498,16 @@
 				"type": "function"
 			},
 			{
-				"inputs": [
+				"inputs": [],
+				"name": "getOwner",
+				"outputs": [
 					{
 						"internalType": "address",
-						"name": "account",
+						"name": "",
 						"type": "address"
 					}
 				],
-				"name": "excludeFromReward",
-				"outputs": [],
-				"stateMutability": "nonpayable",
+				"stateMutability": "view",
 				"type": "function"
 			},
 			{
@@ -423,19 +519,6 @@
 					}
 				],
 				"name": "includeInFee",
-				"outputs": [],
-				"stateMutability": "nonpayable",
-				"type": "function"
-			},
-			{
-				"inputs": [
-					{
-						"internalType": "address",
-						"name": "account",
-						"type": "address"
-					}
-				],
-				"name": "includeInReward",
 				"outputs": [],
 				"stateMutability": "nonpayable",
 				"type": "function"
@@ -472,25 +555,6 @@
 						"type": "address"
 					}
 				],
-				"name": "isBlacklisted",
-				"outputs": [
-					{
-						"internalType": "bool",
-						"name": "",
-						"type": "bool"
-					}
-				],
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
-				"inputs": [
-					{
-						"internalType": "address",
-						"name": "account",
-						"type": "address"
-					}
-				],
 				"name": "isExcludedFromFee",
 				"outputs": [
 					{
@@ -503,45 +567,6 @@
 				"type": "function"
 			},
 			{
-				"inputs": [
-					{
-						"internalType": "address",
-						"name": "account",
-						"type": "address"
-					}
-				],
-				"name": "isExcludedFromReward",
-				"outputs": [
-					{
-						"internalType": "bool",
-						"name": "",
-						"type": "bool"
-					}
-				],
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
-				"inputs": [
-					{
-						"internalType": "uint256",
-						"name": "type_",
-						"type": "uint256"
-					}
-				],
-				"name": "manualsend",
-				"outputs": [],
-				"stateMutability": "nonpayable",
-				"type": "function"
-			},
-			{
-				"inputs": [],
-				"name": "manualswap",
-				"outputs": [],
-				"stateMutability": "nonpayable",
-				"type": "function"
-			},
-			{
 				"inputs": [],
 				"name": "name",
 				"outputs": [
@@ -551,14 +576,7 @@
 						"type": "string"
 					}
 				],
-				"stateMutability": "pure",
-				"type": "function"
-			},
-			{
-				"inputs": [],
-				"name": "openTrading",
-				"outputs": [],
-				"stateMutability": "nonpayable",
+				"stateMutability": "view",
 				"type": "function"
 			},
 			{
@@ -575,37 +593,13 @@
 				"type": "function"
 			},
 			{
-				"inputs": [
-					{
-						"internalType": "uint256",
-						"name": "tAmount",
-						"type": "uint256"
-					}
-				],
-				"name": "reflect",
-				"outputs": [],
-				"stateMutability": "nonpayable",
-				"type": "function"
-			},
-			{
-				"inputs": [
-					{
-						"internalType": "uint256",
-						"name": "tAmount",
-						"type": "uint256"
-					},
-					{
-						"internalType": "bool",
-						"name": "deductTransferFee",
-						"type": "bool"
-					}
-				],
-				"name": "reflectionFromToken",
+				"inputs": [],
+				"name": "pancakeswapV2Pair",
 				"outputs": [
 					{
-						"internalType": "uint256",
+						"internalType": "address",
 						"name": "",
-						"type": "uint256"
+						"type": "address"
 					}
 				],
 				"stateMutability": "view",
@@ -613,9 +607,28 @@
 			},
 			{
 				"inputs": [],
-				"name": "removeStrictTxLimit",
-				"outputs": [],
-				"stateMutability": "nonpayable",
+				"name": "pancakeswapV2Router",
+				"outputs": [
+					{
+						"internalType": "contract IPancakeswapV2Router02",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "prPoolAddress",
+				"outputs": [
+					{
+						"internalType": "address payable",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
 				"type": "function"
 			},
 			{
@@ -626,57 +639,14 @@
 				"type": "function"
 			},
 			{
-				"inputs": [],
-				"name": "sellTaxes",
-				"outputs": [
-					{
-						"internalType": "uint32",
-						"name": "total_Tax_Percent",
-						"type": "uint32"
-					},
-					{
-						"internalType": "uint32",
-						"name": "burn_Split",
-						"type": "uint32"
-					},
-					{
-						"internalType": "uint32",
-						"name": "governingSplit_Wallet1",
-						"type": "uint32"
-					},
-					{
-						"internalType": "uint32",
-						"name": "governingSplit_Wallet2",
-						"type": "uint32"
-					},
-					{
-						"internalType": "uint32",
-						"name": "autoliquidity_Split",
-						"type": "uint32"
-					},
-					{
-						"internalType": "uint32",
-						"name": "reflect_Split",
-						"type": "uint32"
-					}
-				],
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
 				"inputs": [
 					{
 						"internalType": "address",
 						"name": "account",
 						"type": "address"
-					},
-					{
-						"internalType": "bool",
-						"name": "enabled",
-						"type": "bool"
 					}
 				],
-				"name": "setBlacklistAccount",
+				"name": "setBNBPoolAddress",
 				"outputs": [],
 				"stateMutability": "nonpayable",
 				"type": "function"
@@ -685,11 +655,11 @@
 				"inputs": [
 					{
 						"internalType": "uint256",
-						"name": "maxHoldAmount",
+						"name": "timeForContract",
 						"type": "uint256"
 					}
 				],
-				"name": "setMaxHoldAmount",
+				"name": "setCoolDownTime",
 				"outputs": [],
 				"stateMutability": "nonpayable",
 				"type": "function"
@@ -698,7 +668,35 @@
 				"inputs": [
 					{
 						"internalType": "uint256",
-						"name": "maxTxAmount",
+						"name": "bnbFee",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "liquidityFee",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "prFee",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "buyFee",
+						"type": "uint256"
+					}
+				],
+				"name": "setFees",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "percent",
 						"type": "uint256"
 					}
 				],
@@ -715,88 +713,7 @@
 						"type": "uint256"
 					}
 				],
-				"name": "setSwapThreshold",
-				"outputs": [],
-				"stateMutability": "nonpayable",
-				"type": "function"
-			},
-			{
-				"inputs": [
-					{
-						"internalType": "uint256",
-						"name": "type_",
-						"type": "uint256"
-					},
-					{
-						"internalType": "uint32",
-						"name": "totalTaxPercent_",
-						"type": "uint32"
-					},
-					{
-						"internalType": "uint32",
-						"name": "split0_",
-						"type": "uint32"
-					},
-					{
-						"internalType": "uint32",
-						"name": "split1_",
-						"type": "uint32"
-					},
-					{
-						"internalType": "uint32",
-						"name": "split2_",
-						"type": "uint32"
-					},
-					{
-						"internalType": "uint32",
-						"name": "split3_",
-						"type": "uint32"
-					},
-					{
-						"internalType": "uint32",
-						"name": "split4_",
-						"type": "uint32"
-					},
-					{
-						"internalType": "address",
-						"name": "wallet1_",
-						"type": "address"
-					},
-					{
-						"internalType": "address",
-						"name": "wallet2_",
-						"type": "address"
-					}
-				],
-				"name": "setTaxes",
-				"outputs": [],
-				"stateMutability": "nonpayable",
-				"type": "function"
-			},
-			{
-				"inputs": [
-					{
-						"internalType": "uint256",
-						"name": "swapThreshold",
-						"type": "uint256"
-					},
-					{
-						"internalType": "uint256",
-						"name": "walletReceiveThershold",
-						"type": "uint256"
-					},
-					{
-						"internalType": "uint256",
-						"name": "liquidityTokenThershold",
-						"type": "uint256"
-					},
-					{
-						"internalType": "uint256",
-						"name": "liquidityETHThershold",
-						"type": "uint256"
-					}
-				],
-				"name": "setThershold",
+				"name": "setNumTokensToSwap",
 				"outputs": [],
 				"stateMutability": "nonpayable",
 				"type": "function"
@@ -805,13 +722,52 @@
 				"inputs": [
 					{
 						"internalType": "address",
-						"name": "_uniswapV2Pair",
+						"name": "account",
 						"type": "address"
 					}
 				],
-				"name": "setUniswapPair",
+				"name": "setPRPoolAddress",
 				"outputs": [],
 				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "bool",
+						"name": "_enabled",
+						"type": "bool"
+					}
+				],
+				"name": "setSwapAndLiquifyEnabled",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "swapAndLiquifyEnabled",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "swapCoolDownTime",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
 				"type": "function"
 			},
 			{
@@ -822,25 +778,6 @@
 						"internalType": "string",
 						"name": "",
 						"type": "string"
-					}
-				],
-				"stateMutability": "pure",
-				"type": "function"
-			},
-			{
-				"inputs": [
-					{
-						"internalType": "uint256",
-						"name": "rAmount",
-						"type": "uint256"
-					}
-				],
-				"name": "tokenFromReflection",
-				"outputs": [
-					{
-						"internalType": "uint256",
-						"name": "",
-						"type": "uint256"
 					}
 				],
 				"stateMutability": "view",
@@ -856,7 +793,7 @@
 						"type": "uint256"
 					}
 				],
-				"stateMutability": "pure",
+				"stateMutability": "view",
 				"type": "function"
 			},
 			{
@@ -932,7 +869,44 @@
 		],
 		"devdoc": {
 			"kind": "dev",
-			"methods": {},
+			"methods": {
+				"approve(address,uint256)": {
+					"details": "Sets `amount` as the allowance of `spender` over the caller's tokens. Returns a boolean value indicating whether the operation succeeded. IMPORTANT: Beware that changing an allowance with this method brings the risk that someone may use both the old and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards: https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729 Emits an {Approval} event."
+				},
+				"balanceOf(address)": {
+					"details": "Returns the amount of tokens owned by `account`."
+				},
+				"decimals()": {
+					"details": "Returns the token decimals."
+				},
+				"getOwner()": {
+					"details": "Returns the bep token owner."
+				},
+				"name()": {
+					"details": "Returns the token name."
+				},
+				"owner()": {
+					"details": "Returns the address of the current owner."
+				},
+				"renounceOwnership()": {
+					"details": "Leaves the contract without owner. It will not be possible to call `onlyOwner` functions anymore. Can only be called by the current owner. NOTE: Renouncing ownership will leave the contract without an owner, thereby removing any functionality that is only available to the owner."
+				},
+				"symbol()": {
+					"details": "Returns the token symbol."
+				},
+				"totalSupply()": {
+					"details": "Returns the amount of tokens in existence."
+				},
+				"transfer(address,uint256)": {
+					"details": "Moves `amount` tokens from the caller's account to `recipient`. Returns a boolean value indicating whether the operation succeeded. Emits a {Transfer} event."
+				},
+				"transferFrom(address,address,uint256)": {
+					"details": "Moves `amount` tokens from `sender` to `recipient` using the allowance mechanism. `amount` is then deducted from the caller's allowance. Returns a boolean value indicating whether the operation succeeded. Emits a {Transfer} event."
+				},
+				"transferOwnership(address)": {
+					"details": "Transfers ownership of the contract to a new account (`newOwner`). Can only be called by the current owner."
+				}
+			},
 			"version": 1
 		},
 		"userdoc": {
@@ -943,7 +917,7 @@
 	},
 	"settings": {
 		"compilationTarget": {
-			"Testing/YeagerInuBnB.sol": "YeagerInuBnB"
+			"Testing/Draft/ppp.sol": "PiratesKingToken"
 		},
 		"evmVersion": "london",
 		"libraries": {},
@@ -957,12 +931,12 @@
 		"remappings": []
 	},
 	"sources": {
-		"Testing/YeagerInuBnB.sol": {
-			"keccak256": "0x935a35e55da6a9731025de077296cb740818169386f2f07e7e12704a60e5f24d",
+		"Testing/Draft/ppp.sol": {
+			"keccak256": "0x401930ca2aca13bbbf680032421783c8c8e7bfb871f768cbe40310bebb5e0f1a",
 			"license": "Unlicensed",
 			"urls": [
-				"bzz-raw://ac9ae1cee9a25cb7f0a580813bc70725c04708d3cbd48bbdc7af99b328a5cb10",
-				"dweb:/ipfs/QmVpSWdbj79FnYCDUs8qMbeufNyTB83SrfZxhLn1Wc9aJn"
+				"bzz-raw://9e9baa70ad61c0f3d870932625f823e56839217bf66e16f4c06115c59675caec",
+				"dweb:/ipfs/QmTnwaFjP6z6e56HA2w6JyKNr6jocu8cCpky1n6T3tnSDy"
 			]
 		}
 	},

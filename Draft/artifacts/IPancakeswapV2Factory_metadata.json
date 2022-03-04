@@ -11,112 +11,45 @@
 					{
 						"indexed": true,
 						"internalType": "address",
-						"name": "owner",
+						"name": "token0",
 						"type": "address"
 					},
 					{
 						"indexed": true,
 						"internalType": "address",
-						"name": "spender",
+						"name": "token1",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "address",
+						"name": "pair",
 						"type": "address"
 					},
 					{
 						"indexed": false,
 						"internalType": "uint256",
-						"name": "value",
+						"name": "",
 						"type": "uint256"
 					}
 				],
-				"name": "Approval",
-				"type": "event"
-			},
-			{
-				"anonymous": false,
-				"inputs": [
-					{
-						"indexed": true,
-						"internalType": "address",
-						"name": "from",
-						"type": "address"
-					},
-					{
-						"indexed": true,
-						"internalType": "address",
-						"name": "to",
-						"type": "address"
-					},
-					{
-						"indexed": false,
-						"internalType": "uint256",
-						"name": "value",
-						"type": "uint256"
-					}
-				],
-				"name": "Transfer",
+				"name": "PairCreated",
 				"type": "event"
 			},
 			{
 				"inputs": [
 					{
-						"internalType": "address",
-						"name": "owner",
-						"type": "address"
-					},
-					{
-						"internalType": "address",
-						"name": "spender",
-						"type": "address"
-					}
-				],
-				"name": "allowance",
-				"outputs": [
-					{
 						"internalType": "uint256",
 						"name": "",
 						"type": "uint256"
 					}
 				],
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
-				"inputs": [
-					{
-						"internalType": "address",
-						"name": "spender",
-						"type": "address"
-					},
-					{
-						"internalType": "uint256",
-						"name": "amount",
-						"type": "uint256"
-					}
-				],
-				"name": "approve",
+				"name": "allPairs",
 				"outputs": [
 					{
-						"internalType": "bool",
-						"name": "",
-						"type": "bool"
-					}
-				],
-				"stateMutability": "nonpayable",
-				"type": "function"
-			},
-			{
-				"inputs": [
-					{
 						"internalType": "address",
-						"name": "account",
+						"name": "pair",
 						"type": "address"
-					}
-				],
-				"name": "balanceOf",
-				"outputs": [
-					{
-						"internalType": "uint256",
-						"name": "",
-						"type": "uint256"
 					}
 				],
 				"stateMutability": "view",
@@ -124,7 +57,7 @@
 			},
 			{
 				"inputs": [],
-				"name": "totalSupply",
+				"name": "allPairsLength",
 				"outputs": [
 					{
 						"internalType": "uint256",
@@ -139,23 +72,86 @@
 				"inputs": [
 					{
 						"internalType": "address",
-						"name": "recipient",
+						"name": "tokenA",
 						"type": "address"
 					},
 					{
-						"internalType": "uint256",
-						"name": "amount",
-						"type": "uint256"
+						"internalType": "address",
+						"name": "tokenB",
+						"type": "address"
 					}
 				],
-				"name": "transfer",
+				"name": "createPair",
 				"outputs": [
 					{
-						"internalType": "bool",
-						"name": "",
-						"type": "bool"
+						"internalType": "address",
+						"name": "pair",
+						"type": "address"
 					}
 				],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "feeTo",
+				"outputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "feeToSetter",
+				"outputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "tokenA",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "tokenB",
+						"type": "address"
+					}
+				],
+				"name": "getPair",
+				"outputs": [
+					{
+						"internalType": "address",
+						"name": "pair",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"name": "setFeeTo",
+				"outputs": [],
 				"stateMutability": "nonpayable",
 				"type": "function"
 			},
@@ -163,28 +159,12 @@
 				"inputs": [
 					{
 						"internalType": "address",
-						"name": "sender",
-						"type": "address"
-					},
-					{
-						"internalType": "address",
-						"name": "recipient",
-						"type": "address"
-					},
-					{
-						"internalType": "uint256",
-						"name": "amount",
-						"type": "uint256"
-					}
-				],
-				"name": "transferFrom",
-				"outputs": [
-					{
-						"internalType": "bool",
 						"name": "",
-						"type": "bool"
+						"type": "address"
 					}
 				],
+				"name": "setFeeToSetter",
+				"outputs": [],
 				"stateMutability": "nonpayable",
 				"type": "function"
 			}
@@ -202,7 +182,7 @@
 	},
 	"settings": {
 		"compilationTarget": {
-			"Testing/YeagerInuBnB.sol": "IERC20"
+			"Testing/Draft/ppp.sol": "IPancakeswapV2Factory"
 		},
 		"evmVersion": "london",
 		"libraries": {},
@@ -216,12 +196,12 @@
 		"remappings": []
 	},
 	"sources": {
-		"Testing/YeagerInuBnB.sol": {
-			"keccak256": "0x935a35e55da6a9731025de077296cb740818169386f2f07e7e12704a60e5f24d",
+		"Testing/Draft/ppp.sol": {
+			"keccak256": "0x401930ca2aca13bbbf680032421783c8c8e7bfb871f768cbe40310bebb5e0f1a",
 			"license": "Unlicensed",
 			"urls": [
-				"bzz-raw://ac9ae1cee9a25cb7f0a580813bc70725c04708d3cbd48bbdc7af99b328a5cb10",
-				"dweb:/ipfs/QmVpSWdbj79FnYCDUs8qMbeufNyTB83SrfZxhLn1Wc9aJn"
+				"bzz-raw://9e9baa70ad61c0f3d870932625f823e56839217bf66e16f4c06115c59675caec",
+				"dweb:/ipfs/QmTnwaFjP6z6e56HA2w6JyKNr6jocu8cCpky1n6T3tnSDy"
 			]
 		}
 	},

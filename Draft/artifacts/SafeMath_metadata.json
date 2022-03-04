@@ -6,6 +6,7 @@
 	"output": {
 		"abi": [],
 		"devdoc": {
+			"details": "Wrappers over Solidity's arithmetic operations. NOTE: `SafeMath` is generally not needed starting with Solidity 0.8, since the compiler now has built in overflow checking.",
 			"kind": "dev",
 			"methods": {},
 			"version": 1
@@ -18,7 +19,7 @@
 	},
 	"settings": {
 		"compilationTarget": {
-			"Testing/YeagerInuBnB.sol": "Context"
+			"Testing/Draft/ppp.sol": "SafeMath"
 		},
 		"evmVersion": "london",
 		"libraries": {},
@@ -32,12 +33,12 @@
 		"remappings": []
 	},
 	"sources": {
-		"Testing/YeagerInuBnB.sol": {
-			"keccak256": "0x935a35e55da6a9731025de077296cb740818169386f2f07e7e12704a60e5f24d",
+		"Testing/Draft/ppp.sol": {
+			"keccak256": "0x401930ca2aca13bbbf680032421783c8c8e7bfb871f768cbe40310bebb5e0f1a",
 			"license": "Unlicensed",
 			"urls": [
-				"bzz-raw://ac9ae1cee9a25cb7f0a580813bc70725c04708d3cbd48bbdc7af99b328a5cb10",
-				"dweb:/ipfs/QmVpSWdbj79FnYCDUs8qMbeufNyTB83SrfZxhLn1Wc9aJn"
+				"bzz-raw://9e9baa70ad61c0f3d870932625f823e56839217bf66e16f4c06115c59675caec",
+				"dweb:/ipfs/QmTnwaFjP6z6e56HA2w6JyKNr6jocu8cCpky1n6T3tnSDy"
 			]
 		}
 	},
